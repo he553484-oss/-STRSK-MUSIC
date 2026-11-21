@@ -1,0 +1,19 @@
+GitHub Actions run 44935462635 · commit 7bf0169
+upstream	Set up job	2026-11-21T18:25:40.3413260Z Image: macos-26-arm64
+upstream	Fetch exact unmodified Luma snapshot	2026-11-21T18:25:46.8668690Z 7006a4b51aa3bc5a1175036ea7ec83034fdccbfe
+upstream	Fetch exact unmodified Luma snapshot	2026-11-21T18:25:47.0928840Z 7006a4b51aa3bc5a1175036ea7ec83034fdccbfe
+upstream	Build Release arm64 and build and test on iPhone Simulator	2026-11-21T18:25:48.8812620Z Xcode 26.6
+upstream	Build Release arm64 and build and test on iPhone Simulator	2026-11-21T18:25:48.8824440Z Build version 17F113
+upstream	Build Release arm64 and build and test on iPhone Simulator	2026-11-21T18:27:26.1468040Z ** BUILD SUCCEEDED **
+upstream	Build Release arm64 and build and test on iPhone Simulator	2026-11-21T18:27:32.2107940Z Modelo=iPhone 15 Pro
+upstream	Build Release arm64 and build and test on iPhone Simulator	2026-11-21T18:27:32.2111900Z Runtime=com.apple.CoreSimulator.SimRuntime.iOS-26-5
+upstream	Build Release arm64 and build and test on iPhone Simulator	2026-11-21T18:29:58.5322450Z ** TEST BUILD SUCCEEDED **
+upstream	Build Release arm64 and build and test on iPhone Simulator	2026-11-21T18:34:00.7747950Z ✔ Test run with 41 tests in 4 suites passed after 19.211 seconds.
+upstream	Build Release arm64 and build and test on iPhone Simulator	2026-11-21T18:44:25.1226960Z 	 Executed 10 tests, with 0 failures (0 unexpected) in 609.725 (609.741) seconds
+upstream	Build Release arm64 and build and test on iPhone Simulator	2026-11-21T18:44:25.1795500Z 	 Executed 10 tests, with 0 failures (0 unexpected) in 609.725 (609.744) seconds
+upstream	Build Release arm64 and build and test on iPhone Simulator	2026-11-21T18:44:25.1801990Z 	 Executed 10 tests, with 0 failures (0 unexpected) in 609.725 (609.746) seconds
+upstream	Build Release arm64 and build and test on iPhone Simulator	2026-11-21T18:45:50.7606860Z ** TEST EXECUTE SUCCEEDED **
+upstream	Build Release arm64 and build and test on iPhone Simulator	2026-11-21T18:45:58.6203200Z Release exit=0
+upstream	Build Release arm64 and build and test on iPhone Simulator	2026-11-21T18:45:58.6204060Z Simulator build exit=0
+upstream	Build Release arm64 and build and test on iPhone Simulator	2026-11-21T18:45:58.6204730Z Simulator tests exit=0
+upstream	Upload logs and result bundles	2026-11-21T18:46:11.2925290Z Artifact luma-baseline-validation successfully finalized. Artifact ID 14720246336

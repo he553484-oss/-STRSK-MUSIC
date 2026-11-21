@@ -1,5 +1,19 @@
 # Resultados · 21 de noviembre de 2026
 
+## M3 · Validación en GitHub Actions
+
+El runner GitHub macOS arm64 ejecutó Xcode 26.6 (17F113) con el árbol original de Luma en SHA `7006a4b51aa3bc5a1175036ea7ec83034fdccbfe`. El workflow exitoso corresponde al commit `7bf0169` de la rama `m3/luma-baseline`. [GitHub Actions](https://github.com/he553484-oss/-STRSK-MUSIC/actions/runs/44935462635).
+
+| Verificación | Resultado |
+|---|---|
+| Build Release arm64 para iOS | Éxito. Código de salida 0. |
+| Build para pruebas en iPhone Simulator | Éxito. Código de salida 0. |
+| Suite del esquema Luma en iPhone 15 Pro, iOS 26.5 (arm64) | 41 pruebas unitarias en cuatro suites y 10 pruebas de interfaz, sin fallos. Código de salida 0. |
+
+La primera ejecución falló antes de compilar porque un argumento adicional `+` se pasó a `xcode-select`. El commit `7bf0169` corrigió los dos comandos afectados del workflow. El código de Luma se mantuvo intacto. El run exitoso publicó los resultados de Xcode. Se recuperó el log del run, pero la descarga del ZIP en este entorno devolvió HTTP 403. [Primer run](https://github.com/he553484-oss/-STRSK-MUSIC/actions/runs/44935367637) · [Artefacto publicado](https://github.com/he553484-oss/-STRSK-MUSIC/actions/runs/44935462635/artifacts/14720246336) · [Extracto del log](evidence/ios-baseline-ci.log).
+
+## Verificación inicial en Linux
+
 Entorno Debian 13, Linux x86_64. Swift 6.3.2 se instaló para ejecutar pruebas portables. El checkout original de Luma se comprobó limpio en `7006a4b51aa3bc5a1175036ea7ec83034fdccbfe`.
 
 | Verificación | Resultado | Alcance |
@@ -20,8 +34,8 @@ Entorno Debian 13, Linux x86_64. Swift 6.3.2 se instaló para ejecutar pruebas p
 
 Los 46 tests portables son de candidatos upstream. No se ha observado la app abierta ni la integración de STRSK. Importación nativa, reproducción, persistencia, temporización con reloj real, render, red autorizada, firma e instalación siguen pendientes. No se midieron CPU, latencia, memoria, FPS ni batería en iPhone. No se produjo una IPA.
 
-## Continuación de M3
+## Preparación del workflow antes de publicarlo
 
-Se verificó el SHA y el estado limpio del checkout original. El inventario publicado para `macos-26` confirma Xcode 26.6 y el simulador iOS 26.5. El workflow separa los resultados de Release, compilación de simulador y ejecución de la suite, y guarda los paquetes Xcode en un tar comprimido. La ejecución local volvió a detenerse con código 127 porque falta `xcodebuild`. GitHub CLI rechazó la credencial del entorno y el repositorio carece de remoto configurado. El job macOS sigue sin ejecutarse. [Comandos para publicar y recoger los resultados](BUILD.md#ejecutar-en-github-actions).
+Se verificó el SHA y el estado limpio del checkout original. El inventario publicado para `macos-26` confirma Xcode 26.6 y el simulador iOS 26.5. El workflow separa los resultados de Release, compilación de simulador y ejecución de la suite, y guarda los paquetes Xcode en un tar comprimido. La ejecución local volvió a detenerse con código 127 porque falta `xcodebuild`. En ese momento faltaba una credencial válida y el job macOS todavía estaba pendiente. [Comandos para publicar y recoger los resultados](BUILD.md#ejecutar-en-github-actions).
 
 `actionlint` 1.7.11 y `bash -n` pasaron. Con ejecutables de prueba en Linux se comprobaron cinco rutas del script: creación del iPhone 15 Pro, uso de un iPhone alternativo, UUID explícito, fallo de compilación de simulador y fallo de tests. Estas pruebas verifican la lógica del script. Se repitieron las dos suites portables existentes. Pasaron 8 pruebas de Luma y 8 de Erhu.

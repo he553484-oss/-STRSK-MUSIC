@@ -4,7 +4,7 @@
 |---|---|---|
 | M1 · Clonar y auditar | Completado | Cuatro clones completos, siete candidatos adicionales, matriz, código, historial, licencias y CI público. [Auditoría](REPOSITORY_AUDIT.md) |
 | M2 · Elegir base y arquitectura | Completado | Selección de Luma y un motor local, contratos y alcance de reutilización. [Arquitectura](ARCHITECTURE.md) |
-| M3 · Verificar Luma original | Bloqueado tras intento | Release arm64 y suite del esquema original deben pasar en Xcode. [Resultados](TEST_RESULTS.md) |
+| M3 · Verificar Luma original | Completado | Release arm64 y build de simulador aprobados. 41 pruebas unitarias y 10 de interfaz aprobadas en iPhone 15 Pro, iOS 26.5. [GitHub Actions](https://github.com/he553484-oss/-STRSK-MUSIC/actions/runs/44935462635) |
 | M4 · Fork STRSK | Pendiente | Preservar ascendencia del SHA auditado y avisos. Sustituir marca y configurar firma propia. Mantener funcionalidad y suite original. |
 | M5 · Letras | Pendiente | Adoptar Enhanced LRC y TTML en el mismo índice. Probar precisión, seek, cambios rápidos, repetidos, vacíos, outliers, malformed y carga larga. |
 | M6 · Interfaz | Pendiente | Diseño STRSK, Now Playing, mini reproductor, cola, gestos, Liquid Glass donde convenga y controles accesibles. Pruebas de VoiceOver, Dynamic Type y Reduce Motion. |
@@ -15,7 +15,7 @@
 
 Cada hito de aplicación requiere build, test y commit que registre la evidencia. Un fallo queda abierto en el hito donde se observó.
 
-## Preparación de M5 mientras M3 está bloqueado
+## Preparación de M5
 
 La revisión dirigida confirmó dos puntos de integración. Erhu ya parsea Enhanced LRC con marcadores explícitos y aporta pruebas del cursor. MRSC `WordLine` sirve como referencia de renderizado, pero `wordTimings(for:end:)` estima tiempos cuando faltan. En M5 se adaptará el parser de Erhu con sus avisos GPLv3 y se conectará el renderizado de SwiftUI al reloj de Luma. Si solo hay tiempos de línea, se activará el resaltado por línea.
 
