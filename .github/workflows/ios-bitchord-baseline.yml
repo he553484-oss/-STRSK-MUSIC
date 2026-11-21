@@ -1,0 +1,89 @@
+name: BitChord · pristine iOS baseline
+
+on:
+  push:
+    branches: [m6/bitchord-foundation]
+    paths:
+      - '.github/workflows/ios-bitchord-baseline.yml'
+      - 'scripts/verify-bitchord-baseline.sh'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  baseline:
+    runs-on: xcode-27
+    timeout-minutes: 95
+    env:
+      BITCHORD_REVISION: 9c20ef321f311a3dd3f051ebd820abbc8f952413
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Checkout harness
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          persist-credentials: false
+
+      - name: Checkout upstream at its exact revision
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          repository: bagumamartin/BitChord
+          ref: ${{ env.BITCHORD_REVISION }}
+          path: upstream-bitchord
+          persist-credentials: false
+
+      - name: Select arm64 Xcode and record the runner
+        run: |
+          EVIDENCE_DIR="$RUNNER_TEMP/bitchord-baseline"
+          printf 'EVIDENCE_DIR=%s\n' "$EVIDENCE_DIR" >> "$GITHUB_ENV"
+          mkdir -p "$EVIDENCE_DIR"
+          {
+            sw_vers
+            uname -m
+            find /Applications -maxdepth 1 -name 'Xcode*.app' -print
+          } | tee "$EVIDENCE_DIR/runner.log"
+          test "$(uname -m)" = arm64
+          xcode="$(find /Applications -maxdepth 1 -name 'Xcode_27*.app' -print | sort | tail -1)"
+          if [[ -n "$xcode" ]]; then
+            export DEVELOPER_DIR="$xcode/Contents/Developer"
+          fi
+          xcodebuild -version | tee "$EVIDENCE_DIR/xcode.log"
+          xcodebuild -showsdks | tee "$EVIDENCE_DIR/sdks.log"
+          grep -q '^Xcode 27' "$EVIDENCE_DIR/xcode.log"
+          printf 'DEVELOPER_DIR=%s\n' "${DEVELOPER_DIR:-$(xcode-select -p)}" >> "$GITHUB_ENV"
+
+      - name: Install JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Prepare Rust, CMake and XcodeGen
+        run: |
+          {
+            rustup target add aarch64-apple-darwin aarch64-apple-ios aarch64-apple-ios-sim
+            command -v cmake >/dev/null || brew install cmake
+            command -v xcodegen >/dev/null || brew install xcodegen
+            java -version
+            rustc --version
+            cargo --version
+            cmake --version
+            xcodegen --version
+          } 2>&1 | tee "$EVIDENCE_DIR/dependencies.log"
+
+      - name: Build both frameworks and apps, and run upstream offline tests
+        run: scripts/verify-bitchord-baseline.sh upstream-bitchord
+
+      - name: Upload baseline logs and test results
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: bitchord-original-evidence
+          path: |
+            ${{ runner.temp }}/bitchord-baseline/*.log
+            ${{ runner.temp }}/bitchord-baseline/*.txt
+            ${{ runner.temp }}/bitchord-baseline/*.json
+            ${{ runner.temp }}/bitchord-baseline/results.tar.gz
+            ${{ runner.temp }}/bitchord-baseline/*.png
