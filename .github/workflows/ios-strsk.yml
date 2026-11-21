@@ -1,10 +1,10 @@
 name: STRSK MUSIC · iOS
 on:
   push:
-    branches: [m4/strsk-music, m5/strsk-lyrics]
+    branches: [m4/strsk-music, m5/strsk-lyrics, m6/bitchord-foundation]
     paths-ignore: ['**/*.md', 'evidence/**']
   pull_request:
-    branches: [m4/strsk-music, m5/strsk-lyrics]
+    branches: [m4/strsk-music, m5/strsk-lyrics, m6/bitchord-foundation]
   workflow_dispatch:
 
 permissions:
@@ -24,6 +24,15 @@ jobs:
       - name: Checkout STRSK
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
         with:
+          persist-credentials: false
+
+      - name: Checkout the pinned upstream WebDAV fixture
+        if: github.ref_name == 'm6/bitchord-foundation' || github.base_ref == 'm6/bitchord-foundation'
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          repository: bagumamartin/BitChord
+          ref: 9c20ef321f311a3dd3f051ebd820abbc8f952413
+          path: upstream-bitchord
           persist-credentials: false
 
       - name: Record SDK and choose iPhone Simulator
@@ -100,12 +109,30 @@ jobs:
 
       - name: Run unit and UI tests
         if: ${{ !cancelled() && steps.simulator.outcome == 'success' }}
+        env:
+          VERIFY_WEBDAV: ${{ github.ref_name == 'm6/bitchord-foundation' || github.base_ref == 'm6/bitchord-foundation' }}
         run: |
           results="$RUNNER_TEMP/strsk-ios"
+          fixture="$RUNNER_TEMP/strsk-webdav"
+          if [[ "$VERIFY_WEBDAV" == true ]]; then
+            scripts/start-webdav-test-server.sh upstream-bitchord "$fixture"
+            cleanup_webdav() {
+              kill "$(cat "$fixture/server.pid")" 2>/dev/null || true
+              cp "$fixture/requests.log" "$results/webdav-requests.log"
+            }
+            trap cleanup_webdav EXIT
+            xcrun swiftc -swift-version 6 -o "$fixture/check" Luma/WebDAVLibrary.swift scripts/WebDAVTransportCheck.swift
+            "$fixture/check" | tee "$results/webdav-transport.log"
+            : > "$fixture/requests.log"
+          fi
           xcodebuild -project Luma.xcodeproj -scheme Luma -configuration Debug \
             -destination "platform=iOS Simulator,id=$STRSK_SIMULATOR_ID" \
             -derivedDataPath "$results/simulator-build" -resultBundlePath "$results/Tests.xcresult" \
             -parallel-testing-enabled NO CODE_SIGNING_ALLOWED=NO test-without-building 2>&1 | tee "$results/tests.log"
+          if [[ "$VERIFY_WEBDAV" == true ]]; then
+            grep -q 'GET .*Signal%20Archive.wav' "$fixture/requests.log"
+            grep -q 'GET .*Signal%20Archive.lrc' "$fixture/requests.log"
+          fi
 
       - name: Record the real karaoke flow
         if: ${{ !cancelled() && github.ref == 'refs/heads/m5/strsk-lyrics' && steps.simulator.outcome == 'success' }}

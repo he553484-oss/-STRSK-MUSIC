@@ -2,6 +2,54 @@ import XCTest
 
 @MainActor
 final class LumaUITests: XCTestCase {
+    func testWebDAVMusicPlaysWithImportedKaraoke() {
+        let share = URL(string: "http://localhost:8181/Music/")!
+        let app = XCUIApplication()
+        app.launchArguments = ["--ui-testing", "--reset-ui-state"]
+        app.launch()
+        let entry = app.buttons["library.webdav"]
+        XCTAssertTrue(entry.waitForExistence(timeout: 10))
+        entry.tap()
+
+        let address = app.textFields["webdav.address"]
+        XCTAssertTrue(address.waitForExistence(timeout: 5))
+        address.tap()
+        address.typeText(share.absoluteString)
+        let username = app.textFields["webdav.username"]
+        username.tap()
+        username.typeText("listener")
+        let password = app.secureTextFields["webdav.password"]
+        password.tap()
+        password.typeText("correct-horse")
+        app.buttons["webdav.connect"].tap()
+
+        let artist = app.buttons["webdav.artist.Signal Choir"]
+        XCTAssertTrue(artist.waitForExistence(timeout: 10))
+        capture(app, name: "M6 WebDAV · real catalog")
+        artist.tap()
+        XCTAssertTrue(app.buttons["Download and play Quiet Vector"].waitForExistence(timeout: 5))
+        app.buttons["Show entire catalog"].tap()
+        app.buttons["webdav.album.Night Transmission"].tap()
+        let audio = app.buttons["Download and play Signal Archive"]
+        XCTAssertTrue(audio.waitForExistence(timeout: 5))
+        audio.tap()
+
+        let lyrics = app.buttons["player.lyrics"]
+        XCTAssertTrue(lyrics.waitForExistence(timeout: 12))
+        XCTAssertEqual(app.buttons["player.playPause"].label, "Pause")
+        lyrics.tap()
+        XCTAssertTrue(app.staticTexts["Word-synced lyrics"].waitForExistence(timeout: 8))
+        let transport = app.buttons["lyrics.playPause"]
+        transport.tap()
+        XCTAssertEqual(transport.label, "Play lyrics track")
+        let line = app.buttons["Follow the signal, seek to 0:18"]
+        XCTAssertTrue(line.waitForExistence(timeout: 5))
+        line.tap()
+        XCTAssertEqual(line.value as? String, "Singing")
+        XCTAssertEqual(transport.label, "Play lyrics track")
+        capture(app, name: "M6 WebDAV · karaoke with paused seek")
+    }
+
     func testImportedKaraokeFollowsAudioDuringPlaybackPauseAndSeek() {
         let app = XCUIApplication()
         app.launchArguments = ["--ui-testing", "--reset-ui-state", "--import-strsk-karaoke"]
