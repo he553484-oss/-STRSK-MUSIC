@@ -1,0 +1,31 @@
+Run 44961549564
+2026-11-21T23:23:41.7941030Z Model=iPhone 15 Pro
+2026-11-21T23:23:41.7942700Z Runtime=com.apple.CoreSimulator.SimRuntime.iOS-26-5
+2026-11-21T23:24:48.6039390Z ** BUILD SUCCEEDED **
+2026-11-21T23:26:34.6794250Z ** TEST BUILD SUCCEEDED **
+2026-11-21T23:30:31.1709470Z PASS WebDAV HTTP 401, catalog, artist/album, search, origin isolation, WAV and Enhanced LRC
+2026-11-21T23:32:49.9358620Z ✔ Test run with 54 tests in 5 suites passed after 14.029 seconds.
+2026-11-21T23:43:18.5102750Z Test Case '-[LumaUITests.LumaUITests testWebDAVMusicPlaysWithImportedKaraoke]' passed (36.168 seconds).
+2026-11-21T23:43:18.5195200Z 	 Executed 13 tests, with 0 failures (0 unexpected) in 616.738 (616.752) seconds
+2026-11-21T23:43:18.6198790Z 	 Executed 13 tests, with 0 failures (0 unexpected) in 616.738 (616.755) seconds
+2026-11-21T23:43:18.6301950Z 	 Executed 13 tests, with 0 failures (0 unexpected) in 616.738 (616.761) seconds
+2026-11-21T23:43:20.6950010Z ** TEST EXECUTE SUCCEEDED **
+2026-11-21T23:43:27.1898340Z File: 2958B6BE-57A3-4208-B03B-034F503CDCF8.png, suggested name: "M6 WebDAV · karaoke with paused seek_0_08E495BB-B9BC-47D0-9946-8BD7F91F3C71.png"
+2026-11-21T23:43:27.1899670Z File: BFB4D0C0-B82E-4199-8F36-3B74A130F379.png, suggested name: "M6 WebDAV · real catalog_0_F832D355-73AC-4638-BE22-58939C59F326.png"
+
+Run 44961603101
+2026-11-21T23:24:23.9559490Z Model=iPhone 15 Pro
+2026-11-21T23:24:23.9561700Z Runtime=com.apple.CoreSimulator.SimRuntime.iOS-26-5
+2026-11-21T23:25:46.5381230Z ** BUILD SUCCEEDED **
+2026-11-21T23:28:03.2901830Z ** TEST BUILD SUCCEEDED **
+2026-11-21T23:31:35.3390290Z PASS WebDAV HTTP 401, catalog, artist/album, search, origin isolation, WAV and Enhanced LRC
+2026-11-21T23:33:15.7542510Z ✔ Test run with 54 tests in 5 suites passed after 14.478 seconds.
+2026-11-21T23:37:03.2723340Z /Users/runner/work/-STRSK-MUSIC/-STRSK-MUSIC/LumaUITests/LumaUITests.swift:193: error: -[LumaUITests.LumaUITests testLibrarySelectionAddsMultipleSongsToNewAndExistingPlaylist] : Failed to tap "Open playlist Selected songs" Button: No matches found for Elements matching predicate '"Open playlist Selected songs" IN identifiers' from input {(
+2026-11-21T23:37:03.2785310Z     Button, label: 'Open playlist S',
+2026-11-21T23:43:44.8678800Z Test Case '-[LumaUITests.LumaUITests testWebDAVMusicPlaysWithImportedKaraoke]' passed (38.031 seconds).
+2026-11-21T23:43:44.8700810Z 	 Executed 13 tests, with 1 failure (0 unexpected) in 593.897 (593.917) seconds
+2026-11-21T23:43:45.0512150Z 	 Executed 13 tests, with 1 failure (0 unexpected) in 593.897 (593.920) seconds
+2026-11-21T23:43:45.0532160Z 	 Executed 13 tests, with 1 failure (0 unexpected) in 593.897 (593.922) seconds
+2026-11-21T23:44:24.0306930Z ** TEST EXECUTE FAILED **
+2026-11-21T23:44:35.9068010Z File: 3CA5B4D7-E3B8-4F2D-8475-8766C9B85C1B.png, suggested name: "M6 WebDAV · karaoke with paused seek_0_707CAB69-A2B0-4B92-996B-F1F357B45678.png"
+2026-11-21T23:44:35.9068960Z File: EB6778D2-3CF3-469B-87AA-F3980F232429.png, suggested name: "M6 WebDAV · real catalog_0_FC143FEC-3CCE-4BC3-809F-6E8EA64EFF84.png"
