@@ -29,12 +29,12 @@ jobs:
       - name: Select Xcode 26.6
         run: |
           mkdir -p "$RUNNER_TEMP/luma-baseline"
-          sudo xcode-select -s /Applications/Xcode_26.6.app/Contents/Developer +            2>&1 | tee "$RUNNER_TEMP/luma-baseline/xcode-select.log"
+          sudo xcode-select -s /Applications/Xcode_26.6.app/Contents/Developer 2>&1 | tee "$RUNNER_TEMP/luma-baseline/xcode-select.log"
         shell: bash
 
       - name: Build Release arm64 and build and test on iPhone Simulator
         run: |
-          scripts/verify-luma-baseline.sh upstream-luma "$RUNNER_TEMP/luma-baseline" +            2>&1 | tee "$RUNNER_TEMP/luma-baseline/verification.log"
+          scripts/verify-luma-baseline.sh upstream-luma "$RUNNER_TEMP/luma-baseline" 2>&1 | tee "$RUNNER_TEMP/luma-baseline/verification.log"
         shell: bash
 
       - name: Archive Xcode result bundles
