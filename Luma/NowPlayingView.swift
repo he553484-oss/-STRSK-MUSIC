@@ -195,7 +195,7 @@ struct NowPlayingView: View {
         .sheet(item: $panel) { panel in
             switch panel {
             case .queue: QueueView()
-            case .lyrics: LyricsView(track: player.current)
+            case .lyrics: LyricsView(track: player.current, followsCurrentTrack: true)
             case .settings: PlayerSettingsView()
             case .playlist: AddToPlaylistView(tracks: [player.current])
             case .info: TrackInfoView(track: player.current)

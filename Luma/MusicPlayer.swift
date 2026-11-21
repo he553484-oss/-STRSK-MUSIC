@@ -10,6 +10,13 @@ final class MusicPlayer: NSObject, AVAudioPlayerDelegate {
     private(set) var current = Track.empty
     private(set) var isPlaying = false
     private(set) var elapsed: TimeInterval = 0
+
+    /// The lyric scene samples AVAudioPlayer directly. Reading elapsed keeps
+    /// paused seeks observable even when TimelineView has stopped ticking.
+    var lyricsPlaybackTime: TimeInterval {
+        let publishedPosition = elapsed
+        return audio?.currentTime ?? publishedPosition
+    }
     private(set) var duration: TimeInterval = 0
     private(set) var shuffle = false
     private(set) var favorites: Set<String> = []
@@ -399,14 +406,36 @@ final class MusicPlayer: NSObject, AVAudioPlayerDelegate {
         if text.isEmpty { lyrics.removeValue(forKey: track.id) } else { lyrics[track.id] = text }
         persist()
     }
-    func importLyrics(_ url: URL, for track: Track) {
-        let access = url.startAccessingSecurityScopedResource()
-        defer { if access { url.stopAccessingSecurityScopedResource() } }
+    @discardableResult
+    func importLyrics(_ url: URL, for track: Track) async -> Bool {
         do {
-            let data = try Data(contentsOf: url)
-            guard data.count < 2_000_000, let text = String(data: data, encoding: .utf8) ?? String(data: data, encoding: .utf16) else { throw CocoaError(.fileReadInapplicableStringEncoding) }
+            let text = try await Task.detached(priority: .userInitiated) {
+                let access = url.startAccessingSecurityScopedResource()
+                defer { if access { url.stopAccessingSecurityScopedResource() } }
+                let file = try FileHandle(forReadingFrom: url)
+                defer { try? file.close() }
+                let data = try file.read(upToCount: 2_000_001) ?? Data()
+                guard data.count <= 2_000_000,
+                      let text = String(data: data, encoding: .utf8) ?? String(data: data, encoding: .utf16),
+                      !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+                    throw CocoaError(.fileReadInapplicableStringEncoding)
+                }
+                let document = LyricsDocument(text)
+                let ext = url.pathExtension.lowercased()
+                guard document.valid, !document.lines.isEmpty,
+                      (ext != "ttml" || TTMLLyricsParser.parse(text) != nil),
+                      ((ext != "yrc" && ext != "krc") || document.isSynchronized) else {
+                    throw CocoaError(.fileReadCorruptFile)
+                }
+                return text
+            }.value
+            guard tracks.contains(where: { $0.id == track.id }), !Task.isCancelled else { return false }
             setLyrics(text, for: track)
-        } catch { self.error = "Couldn’t read these lyrics. Choose a UTF-8 or UTF-16 text or LRC file." }
+            return true
+        } catch {
+            self.error = "Couldn't read these lyrics. Choose a UTF-8 or UTF-16 LRC, TTML, text YRC/KRC, or plain text file."
+            return false
+        }
     }
 
     func setSleepTimer(minutes: Int? = nil, endOfTrack: Bool = false) {
