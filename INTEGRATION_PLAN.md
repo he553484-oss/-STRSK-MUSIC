@@ -5,7 +5,7 @@
 | M1 · Clonar y auditar | Completado | Cuatro clones completos, siete candidatos adicionales, matriz, código, historial, licencias y CI público. [Auditoría](REPOSITORY_AUDIT.md) |
 | M2 · Elegir base y arquitectura | Completado | Selección de Luma y un motor local, contratos y alcance de reutilización. [Arquitectura](ARCHITECTURE.md) |
 | M3 · Verificar Luma original | Completado | Release arm64 y build de simulador aprobados. 41 pruebas unitarias y 10 de interfaz aprobadas en iPhone 15 Pro, iOS 26.5. [GitHub Actions](https://github.com/he553484-oss/-STRSK-MUSIC/actions/runs/44935462635) |
-| M4 · Fork STRSK | Pendiente | Preservar ascendencia del SHA auditado y avisos. Sustituir marca y configurar firma propia. Mantener funcionalidad y suite original. |
+| M4 · Fork STRSK | Iniciado | El fork local conserva la ascendencia y los avisos de Luma. Sustituir marca y configurar firma propia. Mantener funcionalidad y suite original. |
 | M5 · Letras | Pendiente | Adoptar Enhanced LRC y TTML en el mismo índice. Probar precisión, seek, cambios rápidos, repetidos, vacíos, outliers, malformed y carga larga. |
 | M6 · Interfaz | Pendiente | Diseño STRSK, Now Playing, mini reproductor, cola, gestos, Liquid Glass donde convenga y controles accesibles. Pruebas de VoiceOver, Dynamic Type y Reduce Motion. |
 | M7 · Biblioteca | Pendiente | Importar archivos reales, reabrir la app y verificar biblioteca, favoritos, playlists, búsqueda y recuperación. Stress de importación y reanudación. |
