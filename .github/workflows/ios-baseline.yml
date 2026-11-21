@@ -27,14 +27,37 @@ jobs:
           persist-credentials: false
 
       - name: Select Xcode 26.6
+        id: xcode
         run: |
           mkdir -p "$RUNNER_TEMP/luma-baseline"
           sudo xcode-select -s /Applications/Xcode_26.6.app/Contents/Developer 2>&1 | tee "$RUNNER_TEMP/luma-baseline/xcode-select.log"
         shell: bash
 
-      - name: Build Release arm64 and build and test on iPhone Simulator
+      - name: Build Release arm64 for iOS
+        id: release
+        run: scripts/verify-luma-baseline.sh upstream-luma "$RUNNER_TEMP/luma-baseline" release
+        shell: bash
+
+      - name: Build app and test targets for iPhone Simulator
+        id: simulator-build
+        if: ${{ !cancelled() && steps.xcode.outcome == 'success' }}
+        run: scripts/verify-luma-baseline.sh upstream-luma "$RUNNER_TEMP/luma-baseline" simulator-build
+        shell: bash
+
+      - name: Run original iOS test suite
+        id: simulator-tests
+        if: ${{ !cancelled() && steps.simulator-build.outcome == 'success' }}
+        run: scripts/verify-luma-baseline.sh upstream-luma "$RUNNER_TEMP/luma-baseline" simulator-test
+        shell: bash
+
+      - name: Record verification status
+        if: ${{ !cancelled() && steps.xcode.outcome != 'skipped' }}
+        env:
+          RELEASE: ${{ steps.release.outcome }}
+          SIMULATOR_BUILD: ${{ steps.simulator-build.outcome }}
+          SIMULATOR_TESTS: ${{ steps.simulator-tests.outcome }}
         run: |
-          scripts/verify-luma-baseline.sh upstream-luma "$RUNNER_TEMP/luma-baseline" 2>&1 | tee "$RUNNER_TEMP/luma-baseline/verification.log"
+          printf 'Release=%s\nSimulator build=%s\nSimulator tests=%s\n' "$RELEASE" "$SIMULATOR_BUILD" "$SIMULATOR_TESTS" | tee "$RUNNER_TEMP/luma-baseline/status.log"
         shell: bash
 
       - name: Archive Xcode result bundles
