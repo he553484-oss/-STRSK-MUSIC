@@ -6,7 +6,7 @@
 | --- | --- |
 | Original BitChord sin modificaciones | Checkout limpio en `9c20ef321f311a3dd3f051ebd820abbc8f952413`. El runner arm64 seleccionó Xcode 27 e instaló los requisitos. [Workflow y estado](https://github.com/he553484-oss/-STRSK-MUSIC/actions/runs/44960824322). |
 | Verificadores portables del original | Swift 6.3.2 sobre Linux ejecutó las fuentes y los programas originales de verificación. Pasaron 109 comprobaciones de cola/restauración y el verificador de orden de álbum y rutas locales. Este resultado no acredita el build de la aplicación. |
-| Transporte WebDAV en STRSK | Pasó contra el servidor HTTP de BitChord fijado, con audio y letras originales. Se verificaron HTTP 401, catálogo, agrupación por artista y álbum, búsqueda, exclusión de otro origen y descargas reales WAV y Enhanced LRC. |
+| Transporte WebDAV en STRSK | Pasó contra el servidor HTTP de BitChord fijado, con audio y letras originales. Se verificaron HTTP 401, catálogo, agrupación por artista y álbum, búsqueda, exclusión de otro origen y descargas reales WAV y Enhanced LRC. Una segunda prueba en Linux pasó catálogo, búsqueda y descarga con rclone WebDAV v1.60.1-DEV. El cliente rechazó un certificado firmado por una CA local que el sistema no conocía. |
 | Aplicación STRSK M6 | El workflow compila Release arm64, construye para simulador y ejecuta las suites de iOS con el servidor de prueba activo. [Workflow y estado](https://github.com/he553484-oss/-STRSK-MUSIC/actions?query=branch%3Am6%2Fbitchord-foundation). |
 | Reproducción de un proveedor comercial | Pendiente de una integración autorizada de catálogo y reproducción. |
 | Dispositivo, AltStore y segundo plano | Pendientes de prueba física. |

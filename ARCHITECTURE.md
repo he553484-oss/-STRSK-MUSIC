@@ -1,4 +1,6 @@
-# Arquitectura · M2
+# Arquitectura
+
+## Decisión original · M2
 
 **Decisión.** La base será Luma en `7006a4b51aa3bc5a1175036ea7ec83034fdccbfe`. Su biblioteca local importa archivos, persiste selecciones y prueba migración y recuperación. El único motor local inicial será su implementación AVAudioPlayer, con la programación anticipada de `GaplessScheduler` usando el reloj del dispositivo. El primer refactor extraerá interfaces al ritmo de los cambios que las necesiten. [Auditoría](REPOSITORY_AUDIT.md).
 
@@ -30,3 +32,9 @@ El avance visual parte de la posición del motor. Las actualizaciones de pantall
 Usar YouTube Data API v3 para `search.list` de videos musicales, canales como referencias de artistas, y miniaturas y metadatos entregados por la API. Las playlists públicas o autorizadas usan `playlists.list` y `playlistItems.list`. Las playlists del usuario requieren OAuth y alcance de lectura. El login nativo usará OAuth de Google con su SDK oficial o AppAuth si los parámetros de cliente y redirección están admitidos para el bundle firmado. Los tokens quedan en Keychain y se eliminan localmente al desconectar. El catálogo admitirá guardados e historial de acciones internos con controles de borrado y renovación o eliminación de los datos de API según la política aplicable. El reloj y la cola local reciben exclusivamente audio importado. [Búsqueda oficial](https://developers.google.com/youtube/data/reference/rest/v3/search/list) · [Playlists](https://developers.google.com/youtube/data/reference/rest/v3/playlists/list) · [Elementos de playlist](https://developers.google.com/youtube/data/reference/rest/v3/playlistItems/list) · [OAuth nativo](https://developers.google.com/identity/protocols/oauth2/native-app) · [Políticas de datos y reproducción](https://developers.google.com/youtube/terms/developer-policies).
 
 En M8 se validarán marca y atribución de YouTube, enlaces a YouTube Music para referencias que correspondan, cuotas, URLs HTTPS permitidas, revocación y errores HTTP. YouTube Data API permite consultar recursos de YouTube. La disponibilidad exacta de una referencia en YouTube Music depende del contenido, la región y la cuenta. La app entregará la reproducción a la aplicación o página oficial. Para el catálogo público se evaluará una clave configurada fuera del repositorio y restringida al uso previsto, o un intermediario propio si la clave no puede protegerse adecuadamente en el cliente.
+
+## M6 · Biblioteca remota
+
+La decisión de M6 mantiene el reproductor M5 y usa WebDAV para una biblioteca cuyo acceso autoriza su propietario. `WebDAVLibrary` descubre archivos mediante PROPFIND, aplica límites de exploración y acepta únicamente descendientes del directorio configurado en el mismo origen. La sesión HTTPS no utiliza cookies ni credenciales compartidas y rechaza redirecciones. La vista muestra el catálogo y el estado de la conexión y descarga.
+
+Una pista descargada pasa por el importador local, con deduplicación por contenido. Los archivos de letras asociados pasan por el importador M5. SQLite conserva solo el resultado de la importación, con la misma identidad que usa la cola y el reloj de AVAudioPlayer. Los archivos aún remotos pueden buscarse abierta la fuente. Los archivos importados se usan en playlists, favoritos y karaoke offline. [Auditoría de BitChord y decisión A/B](M6_BITCHORD_AUDIT.md).
