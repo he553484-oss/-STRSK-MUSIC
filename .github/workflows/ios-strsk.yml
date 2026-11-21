@@ -1,0 +1,136 @@
+name: STRSK MUSIC · iOS
+on:
+  push:
+    branches: [m4/strsk-music]
+    paths-ignore: ['**/*.md', 'evidence/**']
+  pull_request:
+    branches: [m4/strsk-music]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  DEVELOPER_DIR: /Applications/Xcode_26.6.app/Contents/Developer
+
+jobs:
+  ios:
+    runs-on: macos-26
+    timeout-minutes: 55
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Checkout STRSK
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          persist-credentials: false
+
+      - name: Record SDK and choose iPhone Simulator
+        run: |
+          results="$RUNNER_TEMP/strsk-ios"
+          mkdir -p "$results"
+          git rev-parse HEAD | tee "$results/commit.txt"
+          xcodebuild -version | tee "$results/xcode.log"
+          xcodebuild -showsdks | tee "$results/sdks.log"
+          xcrun simctl list devices available -j > "$results/simulators.json"
+          read -r device runtime model < <(python3 - "$results/simulators.json" <<'PY'
+          import json
+          import sys
+
+          with open(sys.argv[1]) as source:
+              runtimes = json.load(source)["devices"]
+          candidates = []
+          for runtime, devices in runtimes.items():
+              if ".iOS-" not in runtime:
+                  continue
+              version = tuple(map(int, runtime.split(".iOS-", 1)[1].split("-")))
+              if version[0] < 26:
+                  continue
+              for device in devices:
+                  model = device["name"]
+                  if device["isAvailable"] and model.startswith("iPhone"):
+                      candidates.append((model == "iPhone 15 Pro", version, model.endswith(" Pro"), device["udid"], runtime, model))
+          if not candidates:
+              sys.exit("No available iPhone simulator with iOS 26 or later")
+          print(*max(candidates)[-3:])
+          PY
+          )
+          if [[ "$model" != "iPhone 15 Pro" ]]; then
+            if target="$(xcrun simctl create 'STRSK iPhone 15 Pro' com.apple.CoreSimulator.SimDeviceType.iPhone-15-Pro "$runtime" 2>"$results/simulator-create.log")"; then
+              device="$target"
+              model="iPhone 15 Pro"
+            fi
+          fi
+          printf 'Model=%s\nRuntime=%s\nUUID=%s\n' "$model" "$runtime" "$device" | tee "$results/destination.txt"
+          printf 'STRSK_SIMULATOR_ID=%s\n' "$device" >> "$GITHUB_ENV"
+
+      - name: Build Release arm64 for iOS
+        id: release
+        run: |
+          results="$RUNNER_TEMP/strsk-ios"
+          xcodebuild -project Luma.xcodeproj -scheme Luma -configuration Release -destination 'generic/platform=iOS' \
+            -derivedDataPath "$results/device-build" -resultBundlePath "$results/Release.xcresult" \
+            ARCHS=arm64 CODE_SIGNING_ALLOWED=NO build 2>&1 | tee "$results/release.log"
+
+      - name: Package unsigned Release IPA
+        if: ${{ !cancelled() && steps.release.outcome == 'success' }}
+        run: |
+          results="$RUNNER_TEMP/strsk-ios"
+          scripts/package-strsk-ipa.sh "$results/device-build/Build/Products/Release-iphoneos/Luma.app" \
+            "$results/STRSK-MUSIC-unsigned.ipa" | tee "$results/ipa.log"
+
+      - name: Build for iPhone Simulator
+        id: simulator
+        if: ${{ !cancelled() && env.STRSK_SIMULATOR_ID != '' }}
+        run: |
+          results="$RUNNER_TEMP/strsk-ios"
+          xcodebuild -project Luma.xcodeproj -scheme Luma -configuration Debug \
+            -destination "platform=iOS Simulator,id=$STRSK_SIMULATOR_ID" \
+            -derivedDataPath "$results/simulator-build" -resultBundlePath "$results/SimulatorBuild.xcresult" \
+            CODE_SIGNING_ALLOWED=NO build-for-testing 2>&1 | tee "$results/simulator-build.log"
+
+      - name: Run unit and UI tests
+        if: ${{ !cancelled() && steps.simulator.outcome == 'success' }}
+        run: |
+          results="$RUNNER_TEMP/strsk-ios"
+          xcodebuild -project Luma.xcodeproj -scheme Luma -configuration Debug \
+            -destination "platform=iOS Simulator,id=$STRSK_SIMULATOR_ID" \
+            -derivedDataPath "$results/simulator-build" -resultBundlePath "$results/Tests.xcresult" \
+            -parallel-testing-enabled NO CODE_SIGNING_ALLOWED=NO test-without-building 2>&1 | tee "$results/tests.log"
+
+      - name: Collect Xcode results and real simulator screenshots
+        if: always()
+        run: |
+          results="$RUNNER_TEMP/strsk-ios"
+          [[ -d "$results" ]] || exit 0
+          cd "$results"
+          if [[ -d Tests.xcresult ]]; then
+            xcrun xcresulttool get test-results summary --path Tests.xcresult > test-summary.json
+            xcrun xcresulttool export attachments --path Tests.xcresult --output-path screenshots
+          fi
+          shopt -s nullglob
+          bundles=(*.xcresult)
+          if (( ${#bundles[@]} )); then
+            tar -czf xcode-results.tar.gz "${bundles[@]}"
+          fi
+
+      - name: Upload test and build evidence
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: strsk-ios-verification
+          path: |
+            ${{ runner.temp }}/strsk-ios/*.log
+            ${{ runner.temp }}/strsk-ios/*.json
+            ${{ runner.temp }}/strsk-ios/*.txt
+            ${{ runner.temp }}/strsk-ios/xcode-results.tar.gz
+            ${{ runner.temp }}/strsk-ios/screenshots/**
+
+      - name: Upload unsigned IPA
+        if: ${{ !cancelled() && steps.release.outcome == 'success' }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: strsk-unsigned-ipa
+          path: ${{ runner.temp }}/strsk-ios/STRSK-MUSIC-unsigned.ipa*
+          if-no-files-found: error

@@ -2,7 +2,9 @@ name: iOS 26 baseline · Luma upstream
 
 on:
   push:
+    branches: [m3/luma-baseline]
   pull_request:
+    branches: [m3/luma-baseline]
   workflow_dispatch:
 
 permissions:

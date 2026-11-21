@@ -2,6 +2,35 @@ import XCTest
 
 @MainActor
 final class LumaUITests: XCTestCase {
+    func testSTRSKAlbumOpensAndPlaysFromItsTrackList() throws {
+        let app = launch()
+        XCTAssertTrue(app.staticTexts["STRSK MUSIC"].waitForExistence(timeout: 10))
+        capture(app, name: "STRSK Listen")
+
+        app.tabBars.buttons["Library"].tap()
+        let albums = app.buttons["Albums"]
+        XCTAssertTrue(albums.waitForExistence(timeout: 5))
+        albums.tap()
+        let album = app.buttons["Open album Somewhere, nowhere"]
+        XCTAssertTrue(album.waitForExistence(timeout: 5))
+        capture(app, name: "STRSK Library")
+        album.tap()
+
+        XCTAssertTrue(app.navigationBars["Somewhere, nowhere"].waitForExistence(timeout: 5))
+        let track = app.buttons["Play Golden Hour by Luma Sessions"]
+        XCTAssertTrue(track.waitForExistence(timeout: 5))
+        capture(app, name: "STRSK Album")
+        track.tap()
+
+        XCTAssertTrue(app.buttons["player.playPause"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["Golden Hour"].exists)
+        XCTAssertEqual(app.buttons["player.playPause"].label, "Pause")
+        capture(app, name: "STRSK Now Playing")
+
+        app.buttons["Close now playing"].tap()
+        XCTAssertTrue(app.buttons["Open now playing"].waitForExistence(timeout: 5))
+    }
+
     func testReadmeScreenshots() throws {
         let app = XCUIApplication()
         app.launchArguments = ["--ui-testing", "--reset-ui-state", "--readme-screenshots", "--mock-lyrics-api"]
