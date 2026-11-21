@@ -9,7 +9,13 @@ enum TTMLLyricsParser {
     static func parse(_ source: String) -> [LyricLine]? {
         guard source.utf8.count <= 2_000_000,
               source.range(of: "<!DOCTYPE", options: .caseInsensitive) == nil else { return nil }
-        let parser = XMLParser(data: Data(source.utf8))
+        // Files are decoded before reaching the parser. Normalize the XML
+        // declaration to the encoding we actually provide to XMLParser.
+        let normalized = source.replacingOccurrences(
+            of: #"(?i)^(<\?xml[^\x3f]*?encoding\s*=\s*)['"][^'"]+['"]"#,
+            with: #"$1"UTF-8""#, options: .regularExpression
+        )
+        let parser = XMLParser(data: Data(normalized.utf8))
         let delegate = Delegate()
         parser.delegate = delegate
         parser.externalEntityResolvingPolicy = .never
@@ -53,7 +59,8 @@ enum TTMLLyricsParser {
         func parser(_ parser: XMLParser, didStartElement elementName: String, namespaceURI: String?,
                     qualifiedName: String?, attributes: [String: String]) {
             let name = elementName.split(separator: ":").last.map(String.init) ?? elementName
-            guard stack.count < 96, attributes["timeContainer"] != "seq" else {
+            guard stack.count < 96, attributes["timeContainer"] != "seq",
+                  name != "p" || !stack.contains(where: { $0.name == "p" }) else {
                 supported = false
                 parser.abortParsing()
                 return

@@ -1,6 +1,7 @@
 import SwiftUI
 #if DEBUG
 import AVFoundation
+import UIKit
 #endif
 
 @main
@@ -92,6 +93,30 @@ struct STRSKMusicApp: App {
                 samples[frame] = Float(0.15 * envelope * (sin(2 * .pi * frequency * beat) + 0.31 * sin(4 * .pi * frequency * beat)))
             }
             try AVAudioFile(forWriting: audio, settings: format.settings).write(from: buffer)
+            let tagged = directory.appendingPathComponent("Signal Archive.m4a")
+            let cover = UIGraphicsImageRenderer(size: CGSize(width: 320, height: 320)).image { context in
+                UIColor(red: 0.02, green: 0.12, blue: 0.16, alpha: 1).setFill()
+                context.fill(CGRect(x: 0, y: 0, width: 320, height: 320))
+                for line in 0..<11 {
+                    let y = CGFloat(28 + line * 23)
+                    UIColor(red: 0.06, green: 0.72 - CGFloat(line) * 0.043, blue: 0.68, alpha: 1).setFill()
+                    context.fill(CGRect(x: 23 + CGFloat(line * 7), y: y, width: 262 - CGFloat(line * 12), height: 13))
+                }
+            }
+            let artwork = AVMutableMetadataItem()
+            artwork.identifier = .commonIdentifierArtwork
+            artwork.dataType = "com.apple.metadata.datatype.JPEG"
+            artwork.value = cover.jpegData(compressionQuality: 0.84) as NSData?
+            var importedAudio = audio
+            if let exporter = AVAssetExportSession(asset: AVURLAsset(url: audio), presetName: AVAssetExportPresetAppleM4A) {
+                exporter.metadata = [artwork]
+                do {
+                    try await exporter.export(to: tagged, as: .m4a)
+                    importedAudio = tagged
+                } catch {
+                    // WAV is still a real file and exercises the same import path.
+                }
+            }
             let lyrics = directory.appendingPathComponent("Signal Archive.lrc")
             let text = """
             [ti:Signal Archive]
@@ -101,7 +126,7 @@ struct STRSKMusicApp: App {
             [00:48.00]<00:48.00>نور <00:51.00>🎧<00:53.00>
             """
             try text.write(to: lyrics, atomically: true, encoding: .utf8)
-            await player.importFiles([audio])
+            await player.importFiles([importedAudio])
             guard let track = player.tracks.first else { return }
             await player.importLyrics(lyrics, for: track)
         } catch {

@@ -423,8 +423,8 @@ final class MusicPlayer: NSObject, AVAudioPlayerDelegate {
                 let document = LyricsDocument(text)
                 let ext = url.pathExtension.lowercased()
                 guard document.valid, !document.lines.isEmpty,
-                      (ext != "ttml" || TTMLLyricsParser.parse(text) != nil),
-                      ((ext != "yrc" && ext != "krc") || document.isSynchronized) else {
+                      (ext != "ttml" || document.format == .ttml),
+                      ((ext != "yrc" && ext != "krc") || document.format == .wordTimedText) else {
                     throw CocoaError(.fileReadCorruptFile)
                 }
                 return text

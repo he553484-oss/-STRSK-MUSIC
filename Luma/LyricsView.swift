@@ -242,6 +242,7 @@ private struct KaraokeLyricsScroll: View {
                                 .buttonStyle(.plain)
                                 .accessibilityLabel("\(line.instrumental ? "Instrumental" : line.text), seek to \(formattedTime(time))")
                                 .accessibilityValue(frame.activeIDs.contains(line.id) ? "Singing" : "")
+                                .accessibilityHint(line.translation ?? "")
                                 .id(line.id)
                             } else {
                                 lyricRow(line).id(line.id)

@@ -139,9 +139,14 @@ struct KaraokeArtworkBackground: View {
             ZStack {
                 Theme.background
                 RadialGradient(colors: [hue.opacity(0.88), hue.opacity(0.21), .clear],
-                               center: drift ? .topTrailing : .topLeading, startRadius: 0, endRadius: radius * 0.84)
-                RadialGradient(colors: [hue.opacity(0.46), .clear],
-                               center: drift ? .bottomLeading : .bottomTrailing, startRadius: 0, endRadius: radius * 0.6)
+                               center: .top, startRadius: 0, endRadius: radius * 0.84)
+                    .scaleEffect(1.25)
+                    .offset(x: geometry.size.width * (drift ? 0.24 : -0.24), y: -radius * 0.14)
+                RadialGradient(colors: [hue.opacity(0.48), .clear],
+                               center: .bottom, startRadius: 0, endRadius: radius * 0.58)
+                    .scaleEffect(1.18)
+                    .blur(radius: 20)
+                    .offset(x: geometry.size.width * (drift ? -0.28 : 0.28), y: radius * 0.12)
                 LinearGradient(colors: [.black.opacity(0.08), Theme.background.opacity(0.79)],
                                startPoint: .top, endPoint: .bottom)
             }
