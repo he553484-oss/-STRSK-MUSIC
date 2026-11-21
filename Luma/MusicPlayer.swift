@@ -58,6 +58,7 @@ final class MusicPlayer: NSObject, AVAudioPlayerDelegate {
     @ObservationIgnored private let useSystemIntegration: Bool
     @ObservationIgnored private var ready = false
     @ObservationIgnored private var audio: AVAudioPlayer?
+    @ObservationIgnored private var lyricImportTickets: [String: UUID] = [:]
     @ObservationIgnored private var audioEndDeviceTime: TimeInterval?
     @ObservationIgnored private var ticker: Timer?
     @ObservationIgnored private var observers: [NSObjectProtocol] = []
@@ -402,12 +403,18 @@ final class MusicPlayer: NSObject, AVAudioPlayerDelegate {
     func deletePlaylist(_ id: String) { playlists.removeAll { $0.id == id }; persist() }
 
     func setLyrics(_ text: String, for track: Track) {
+        lyricImportTickets.removeValue(forKey: track.id)
         let text = text.trimmingCharacters(in: .whitespacesAndNewlines)
         if text.isEmpty { lyrics.removeValue(forKey: track.id) } else { lyrics[track.id] = text }
         persist()
     }
     @discardableResult
     func importLyrics(_ url: URL, for track: Track) async -> Bool {
+        let ticket = UUID()
+        lyricImportTickets[track.id] = ticket
+        defer {
+            if lyricImportTickets[track.id] == ticket { lyricImportTickets.removeValue(forKey: track.id) }
+        }
         do {
             let text = try await Task.detached(priority: .userInitiated) {
                 let access = url.startAccessingSecurityScopedResource()
@@ -429,10 +436,12 @@ final class MusicPlayer: NSObject, AVAudioPlayerDelegate {
                 }
                 return text
             }.value
-            guard tracks.contains(where: { $0.id == track.id }), !Task.isCancelled else { return false }
+            guard lyricImportTickets[track.id] == ticket,
+                  tracks.contains(where: { $0.id == track.id }), !Task.isCancelled else { return false }
             setLyrics(text, for: track)
             return true
         } catch {
+            guard lyricImportTickets[track.id] == ticket, !Task.isCancelled else { return false }
             self.error = "Couldn't read these lyrics. Choose a UTF-8 or UTF-16 LRC, TTML, text YRC/KRC, or plain text file."
             return false
         }

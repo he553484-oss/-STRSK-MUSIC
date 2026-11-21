@@ -84,3 +84,13 @@ El script comprueba el nombre, la plataforma de dispositivo y la arquitectura ar
 4. En el iPhone, abre la app e importa una pista desde Archivos. Comprueba reproducción con pantalla bloqueada, Control Center, reanudación y, si tienes una ruta disponible, AirPlay. La app usa AVFoundation y SwiftUI sin JIT ni jailbreak.
 
 Para ejecutar directamente desde Xcode en un iPhone emparejado, elige tu Apple Development Team y un identificador disponible en **Signing & Capabilities**, con firma automática. Mantén la identidad y los certificados en el llavero local. CI usa `CODE_SIGNING_ALLOWED=NO`. El repositorio público carece de credenciales Apple, certificados privados y perfiles. Una prueba de instalación con AltStore en hardware sigue pendiente.
+
+## M5 · Letras de archivos locales
+
+1. Importa la canción desde Archivos con **Import music**. Abre **Now Playing → Lyrics** o el menú **Lyrics** de la pista.
+2. Selecciona **Import lyrics file** y el archivo de esa pista. STRSK conserva la asociación en SQLite. Si la pista ya está seleccionada, pulsar una línea busca su marca sin cambiar el estado de pausa.
+3. En **Timing & scroll** ajusta el retraso de las letras y el tiempo para volver al seguimiento tras un desplazamiento manual. El ajuste de retraso se aplica además del offset del archivo.
+
+Enhanced LRC acepta etiquetas de inicio por palabra y un marcador final opcional. Por ejemplo, `[00:02]<00:02>Lo <00:03>cal<00:04>` contiene dos intervalos completos. Las palabras cuyo fin se desconoce reciben un resaltado fijo al llegar su inicio. YRC y KRC se leen como texto decodificado. El perfil TTML incluye contenedores paralelos, párrafos y spans, tiempos de reloj y relativos, agentes explícitos y spans con rol de traducción.
+
+El workflow ejecuta el esquema original sobre el fork y graba otra ejecución del recorrido de karaoke. Las pruebas crean archivos originales de audio y Enhanced LRC e invocan los mismos importadores que usa Archivos. XCTest exporta las capturas. `simctl` graba la pantalla real del simulador. El audio y las letras de prueba solo se generan en builds Debug mediante los argumentos de prueba. [Auditoría de componentes](M5_COMPONENT_AUDIT.md).

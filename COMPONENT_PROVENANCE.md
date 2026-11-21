@@ -14,3 +14,15 @@ La rama M4 deriva de Luma `7006a4b51aa3bc5a1175036ea7ec83034fdccbfe` bajo AGPLv3
 | EQ y crossfade | MRSC y Erhu | MRSC `Player.swift`, `AudioLab.swift`. Erhu `Core/Playback/AudioEngine.swift`, `Core/Sound/TransitionAutomation.swift` | Referencias para una eventual migración del único motor | Erhu tiene pruebas de decks y transiciones en CI | Requieren acceso PCM local y validación comparativa |
 | Contratos de fuentes y búsqueda musical | OpenMusic como referencia, YouTube Data API | `Sources/OpenMusicCore/Contracts/MusicProvider.swift`, `Sources/OpenMusic/App/LibraryLoader.swift` | Diseño del proveedor oficial. Sin reutilización de InnerTube | Runs upstream con conclusiones mixtas. Integración propia pendiente | Dependencia de cuota y credencial oficial |
 | Playlists privadas y OAuth | Google y AppAuth-iOS | `Sources/AppAuth/iOS/OIDAuthorizationService+IOS.m`, `Sources/AppAuthCore/OIDAuthorizationService.m` | Alternativa al SDK oficial en evaluación | CI upstream exitoso | Registrar bundle y esquema compatibles con la firma real |
+
+## M5
+
+| Función | Origen e implementación |
+|---|---|
+| Enhanced LRC | Tokenización adaptada de Erhu y las convenciones UTF-16 de Regex16, bajo GPLv3. `EnhancedLRCParser.swift` conserva orden, texto, límites y desfases de STRSK. |
+| KRC/YRC textuales | `TextWordLyricsParser.swift` adapta el parser MIT de DriveVerse con aviso de Lyricify (Apache-2.0). Los formatos se consumen como texto local. |
+| Máscara de karaoke | `KaraokeTextRenderer.swift` adapta el dibujo por glifo de KaraokeText (MIT) para fragmentos de duración explícita, incluidas sílabas. |
+| TTML y coordinación | Adaptador Foundation, índice temporal, estado de scroll y fondo originales de STRSK. AVAudioPlayer provee el tiempo de reproducción y SQLite mantiene la asociación existente entre pista y letras. |
+| Archivos de prueba | Audio y letras originales creados en Debug. Los tests usan los importadores del producto y el reloj de AVAudioPlayer. |
+
+[Auditoría y SHA de los componentes](M5_COMPONENT_AUDIT.md) · [Textos de licencia y avisos](ThirdParty/).

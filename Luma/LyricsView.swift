@@ -45,9 +45,14 @@ struct LyricsView: View {
                 if key.text.isEmpty {
                     emptyState(track)
                 } else if let document, document.key == key {
-                    KaraokeLyricsScroll(timeline: document.timeline, track: track,
-                                        delayMS: delayMS, returnDelay: returnDelay)
-                        .id(track.id + "\n" + key.text)
+                    if document.timeline.lines.isEmpty {
+                        ContentUnavailableView("No readable lyrics", systemImage: "text.page",
+                                               description: Text("Choose a different file or edit the saved lyrics."))
+                    } else {
+                        KaraokeLyricsScroll(timeline: document.timeline, track: track,
+                                            delayMS: delayMS, returnDelay: returnDelay)
+                            .id(track.id + "\n" + key.text)
+                    }
                 } else {
                     Spacer()
                     ProgressView().accessibilityLabel("Loading lyrics")
