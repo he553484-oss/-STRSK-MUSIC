@@ -100,7 +100,7 @@ final class LumaUITests: XCTestCase {
         app.buttons["New playlist"].tap()
         let name = app.textFields["playlist.name"]
         XCTAssertTrue(name.waitForExistence(timeout: 5))
-        name.tap(); name.typeText("Selected songs")
+        enter("Selected songs", in: name, app: app)
         app.buttons["playlist.save"].tap()
         XCTAssertTrue(app.buttons["library.options"].waitForExistence(timeout: 5))
         app.tabBars.buttons["Playlists"].tap()
@@ -199,6 +199,17 @@ final class LumaUITests: XCTestCase {
         app.launch()
         return app
     }
+    private func enter(_ text: String, in field: XCUIElement, app: XCUIApplication) {
+        XCTAssertTrue(field.waitForExistence(timeout: 5))
+        let keyboard = app.keyboards.firstMatch
+        field.tap()
+        if !keyboard.waitForExistence(timeout: 2) {
+            field.tap()
+        }
+        XCTAssertTrue(keyboard.waitForExistence(timeout: 5))
+        field.typeText(text)
+    }
+
     private func capture(_ app: XCUIApplication, name: String) {
         let attachment = XCTAttachment(screenshot: app.screenshot())
         attachment.name = name; attachment.lifetime = .keepAlways; add(attachment)
@@ -233,7 +244,7 @@ final class LumaUITests: XCTestCase {
         app.buttons["lyrics.add"].tap()
         let editor = app.textViews["lyrics.editor"]
         XCTAssertTrue(editor.waitForExistence(timeout: 5))
-        editor.tap(); editor.typeText("My existing lyrics")
+        enter("My existing lyrics", in: editor, app: app)
         app.buttons["lyrics.save"].tap()
         app.buttons["Lyrics options"].tap()
         app.buttons["lyrics.findOnline"].tap()
@@ -315,7 +326,7 @@ final class LumaUITests: XCTestCase {
         app.tabBars.buttons["Search"].tap()
         let search = app.searchFields.firstMatch
         XCTAssertTrue(search.waitForExistence(timeout: 5))
-        search.tap(); search.typeText("Afterglow")
+        enter("Afterglow", in: search, app: app)
         XCTAssertTrue(app.buttons["Play Afterglow by Luma Sessions"].waitForExistence(timeout: 5))
         XCTAssertFalse(app.buttons["Play Golden Hour by Luma Sessions"].exists)
     }
@@ -326,7 +337,7 @@ final class LumaUITests: XCTestCase {
         app.buttons["playlist.create"].tap()
         let name = app.textFields["playlist.name"]
         XCTAssertTrue(name.waitForExistence(timeout: 5))
-        name.tap(); name.typeText("Night Drive")
+        enter("Night Drive", in: name, app: app)
         app.buttons["playlist.save"].tap()
         let playlist = app.buttons["Open playlist Night Drive"]
         XCTAssertTrue(playlist.waitForExistence(timeout: 5))
@@ -341,7 +352,7 @@ final class LumaUITests: XCTestCase {
         app.swipeDown()
         let search = app.searchFields.firstMatch
         XCTAssertTrue(search.waitForExistence(timeout: 5))
-        search.tap(); search.typeText("Weightless")
+        enter("Weightless", in: search, app: app)
         XCTAssertTrue(app.buttons["Play Weightless by Luma Sessions"].waitForExistence(timeout: 5))
         XCTAssertFalse(app.buttons["Play Golden Hour by Luma Sessions"].exists)
         app.terminate()
