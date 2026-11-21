@@ -2,8 +2,9 @@ import SwiftUI
 
 struct WebDAVLibraryView: View {
     @Environment(MusicPlayer.self) private var player
-    @AppStorage("strsk.webdav.address") private var address = ""
+    @AppStorage("strsk.webdav.address") private var savedAddress = ""
     @Binding var showPlayer: Bool
+    @State private var address = ""
     @State private var username = ""
     @State private var password = ""
     @State private var library: WebDAVLibrary?
@@ -105,6 +106,7 @@ struct WebDAVLibraryView: View {
         } message: {
             Text(message ?? "")
         }
+        .onAppear { if address.isEmpty { address = savedAddress } }
         .onDisappear { work?.cancel() }
     }
 
@@ -183,6 +185,7 @@ struct WebDAVLibraryView: View {
             try Task.checkCancellation()
             tracks = catalog
             library = provider
+            savedAddress = address
             password = ""
         }
     }
