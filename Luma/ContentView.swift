@@ -71,6 +71,13 @@ struct ListenView: View {
                     }
                     Button { showImport = true } label: { Label("Import music", systemImage: "plus").frame(maxWidth: .infinity).padding(.vertical, 10) }
                         .buttonStyle(.glass).accessibilityIdentifier("library.import")
+                    NavigationLink {
+                        WebDAVLibraryView(showPlayer: $showPlayer)
+                    } label: {
+                        Label("Remote Library", systemImage: "externaldrive.connected.to.line.below")
+                    }
+                    .buttonStyle(.glass)
+                    .accessibilityIdentifier("library.webdav")
                     if player.tracks.isEmpty {
                         ContentUnavailableView("No music", systemImage: "music.note", description: Text("Import audio files to get started."))
                             .accessibilityIdentifier("library.empty")

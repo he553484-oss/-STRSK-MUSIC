@@ -41,6 +41,7 @@ struct STRSKMusicApp: App {
                 defaults.removePersistentDomain(forName: suite)
                 // View preferences use @AppStorage in the standard store.
                 UserDefaults.standard.removeObject(forKey: "player.visualizer")
+                UserDefaults.standard.removeObject(forKey: "strsk.webdav.address")
             }
             let documents = MusicPlayer.documents.appendingPathComponent("UITesting", isDirectory: true)
             if ProcessInfo.processInfo.arguments.contains("--reset-ui-state") { try? FileManager.default.removeItem(at: documents) }

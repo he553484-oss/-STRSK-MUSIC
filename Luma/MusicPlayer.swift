@@ -516,13 +516,15 @@ final class MusicPlayer: NSObject, AVAudioPlayerDelegate {
         return removed
     }
 
-    func importFiles(_ urls: [URL]) async {
-        guard !importing, !storageLocked else { return }
+    @discardableResult
+    func importFiles(_ urls: [URL]) async -> [Track] {
+        guard !importing, !storageLocked else { return [] }
         importing = true
         importCompleted = 0; importTotal = urls.count; importFilename = "Checking existing files…"
         await indexExistingAudio()
         defer { importing = false }
         var failed = 0, added = 0, duplicates = 0
+        var imported: [Track] = []
         for url in urls {
             importFilename = url.lastPathComponent
             defer { importCompleted += 1 }
@@ -531,11 +533,18 @@ final class MusicPlayer: NSObject, AVAudioPlayerDelegate {
                 let style = tracks.count % 3
                 let hashes = Set(tracks.compactMap(\.contentHash))
                 let outcome = try await Task.detached(priority: .userInitiated) { try await AudioImporter.importFile(url, to: destination, style: style, knownHashes: hashes) }.value
-                guard let result = outcome else {
-                    duplicates += 1; continue
+                let result: AudioImporter.Result
+                switch outcome {
+                case .duplicate(let hash):
+                    duplicates += 1
+                    if let track = tracks.first(where: { $0.contentHash == hash }) { imported.append(track) }
+                    continue
+                case .added(let audio):
+                    result = audio
                 }
                 added += 1
                 tracks.append(result.track)
+                imported.append(result.track)
                 if let text = result.lyrics, !text.isEmpty { lyrics[result.track.id] = text }
                 if current.id.isEmpty {
                     prepare(result.track); contextIDs = tracks.map(\.id); contextName = "All music"; rebuildQueue()
@@ -545,6 +554,7 @@ final class MusicPlayer: NSObject, AVAudioPlayerDelegate {
         }
         if failed > 0 { error = "Couldn’t import \(failed) file(s). Choose unprotected FLAC, MP3, M4A, WAV, AIFF, or another supported audio format." }
         notice = "Added \(added) · Skipped \(duplicates) duplicate(s) · Failed \(failed)"
+        return imported
     }
 
     var libraryState: LibraryState {
@@ -734,11 +744,15 @@ final class MusicPlayer: NSObject, AVAudioPlayerDelegate {
 
 private enum AudioImporter {
     struct Result: Sendable { var track: Track; var lyrics: String? }
-    static func importFile(_ url: URL, to directory: URL, style: Int, knownHashes: Set<String>) async throws -> Result? {
+    enum Outcome: Sendable {
+        case added(Result)
+        case duplicate(String)
+    }
+    static func importFile(_ url: URL, to directory: URL, style: Int, knownHashes: Set<String>) async throws -> Outcome {
         let access = url.startAccessingSecurityScopedResource()
         defer { if access { url.stopAccessingSecurityScopedResource() } }
         let contentHash = try AudioFileIdentity.hash(url)
-        if knownHashes.contains(contentHash) { return nil }
+        if knownHashes.contains(contentHash) { return .duplicate(contentHash) }
         let id = UUID().uuidString
         let filename = id + "." + url.pathExtension
         let destination = directory.appendingPathComponent(filename)
@@ -746,7 +760,10 @@ private enum AudioImporter {
         do {
             try FileManager.default.copyItem(at: url, to: destination)
             let copiedHash = try AudioFileIdentity.hash(destination)
-            if knownHashes.contains(copiedHash) { try FileManager.default.removeItem(at: destination); return nil }
+            if knownHashes.contains(copiedHash) {
+                try FileManager.default.removeItem(at: destination)
+                return .duplicate(copiedHash)
+            }
             let validator = try AVAudioPlayer(contentsOf: destination)
             guard validator.duration > 0 else { throw CocoaError(.fileReadCorruptFile) }
             let asset = AVURLAsset(url: destination)
@@ -780,7 +797,7 @@ private enum AudioImporter {
                 if bits > 0 { track.bitDepth = bits }
             }
             if let native = FLACMetadata.read(at: destination) { track = native.applying(to: track) }
-            return Result(track: track, lyrics: try? await asset.load(.lyrics))
+            return .added(Result(track: track, lyrics: try? await asset.load(.lyrics)))
         } catch {
             try? FileManager.default.removeItem(at: destination)
             try? FileManager.default.removeItem(at: artworkURL)
