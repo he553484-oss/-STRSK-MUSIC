@@ -114,55 +114,6 @@ enum ReplayGainMode: String, Codable, CaseIterable {
     }
 }
 
-struct LyricLine: Identifiable, Equatable {
-    var id: Int
-    var time: TimeInterval?
-    var text: String
-    var words: [LyricWord] = []
-}
-
-struct LyricsDocument {
-    let lines: [LyricLine]
-    var timeline: LyricsTimeline { LyricsTimeline(lines: lines) }
-    var isSynchronized: Bool { timeline.isSynchronized }
-
-    init(_ text: String) {
-        let timestamp = try! NSRegularExpression(pattern: #"\[(\d{1,3}):(\d{2})(?:[\.:](\d{1,3}))?\]"#)
-        let offsetPattern = try! NSRegularExpression(pattern: #"\[offset:([+-]?\d+)\]"#, options: .caseInsensitive)
-        let nsText = text as NSString
-        let offsetMatch = offsetPattern.firstMatch(in: text, range: NSRange(location: 0, length: nsText.length))
-        let offset = offsetMatch.flatMap { Double(nsText.substring(with: $0.range(at: 1))) }.flatMap { $0.isFinite ? $0 / 1000 : nil } ?? 0
-        var timed: [(Double, String)] = []
-        var plain: [String] = []
-        for raw in text.components(separatedBy: .newlines) {
-            let line = raw.trimmingCharacters(in: .whitespacesAndNewlines)
-            let ns = line as NSString
-            let matches = timestamp.matches(in: line, range: NSRange(location: 0, length: ns.length))
-            if matches.isEmpty {
-                if !line.hasPrefix("[") { plain.append(line) }
-                continue
-            }
-            let content = timestamp.stringByReplacingMatches(in: line, range: NSRange(location: 0, length: ns.length), withTemplate: "").trimmingCharacters(in: .whitespaces)
-            for match in matches {
-                let minutes = Double(ns.substring(with: match.range(at: 1))) ?? 0
-                let seconds = Double(ns.substring(with: match.range(at: 2))) ?? 0
-                guard seconds < 60 else { continue }
-                let fraction = match.range(at: 3).location == NSNotFound ? 0 : Double("0." + ns.substring(with: match.range(at: 3))) ?? 0
-                timed.append((max(0, minutes * 60 + seconds + fraction + offset), content))
-            }
-        }
-        if timed.isEmpty {
-            lines = plain.enumerated().map { LyricLine(id: $0.offset, time: nil, text: $0.element) }
-        } else {
-            lines = timed.sorted { $0.0 < $1.0 }.enumerated().map { LyricLine(id: $0.offset, time: $0.element.0, text: $0.element.1) }
-        }
-    }
-
-    func activeLine(at time: TimeInterval) -> Int? {
-        PlaybackLyricsSynchronizer().activeLine(in: timeline, at: time)
-    }
-}
-
 func formattedTime(_ interval: TimeInterval) -> String {
     guard interval.isFinite else { return "0:00" }
     let seconds = max(0, Int(interval))
