@@ -1,6 +1,6 @@
 # Simulator screenshots
 
-The checked-in images below document the original Luma interface. The STRSK iOS workflow exports real Simulator attachments, including STRSK Listen, Library, Album, and Now Playing, in its build-evidence artifact.
+The checked-in images below document the original Luma interface. The STRSK iOS workflow exports real Simulator attachments, including STRSK Listen, Library, Album, and Now Playing, in the `screenshots/` folder of the [M4 run artifact](https://github.com/he553484-oss/-STRSK-MUSIC/actions/runs/44948114019/artifacts/14725460886). Use `manifest.json` to match the screenshot labels to the exported PNGs.
 
 | File | Screen |
 | --- | --- |

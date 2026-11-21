@@ -1,5 +1,22 @@
 # Resultados · 21 de noviembre de 2026
 
+## M4 · STRSK MUSIC en un iPhone 15 Pro simulado
+
+GitHub Actions probó el fork en `b2ee07903a766a65d044e4d08b20f00c3c17b1c6` sobre macOS arm64 con Xcode 26.6 (17F113). El simulador fue iPhone 15 Pro con iOS 26.5. [Run exitoso](https://github.com/he553484-oss/-STRSK-MUSIC/actions/runs/44948114019).
+
+| Verificación | Resultado |
+|---|---|
+| Build Release para dispositivo | Aprobado. `com.strskmusic.player`, iPhoneOS arm64. |
+| Build de la app y objetivos de pruebas para simulador | Aprobado. |
+| Swift Testing | 41 pruebas en cuatro suites, sin fallos. |
+| XCTest UI | 11 pruebas, sin fallos. Incluye navegación a álbum, reproducción y vuelta al mini reproductor. |
+| Capturas | XCTest exportó PNG reales de inicio, biblioteca, álbum y Now Playing. [Capturas y resultados de Xcode](https://github.com/he553484-oss/-STRSK-MUSIC/actions/runs/44948114019/artifacts/14725460886). |
+| IPA | Paquete arm64 sin firma verificado por el script de CI. [IPA y checksum](https://github.com/he553484-oss/-STRSK-MUSIC/actions/runs/44948114019/artifacts/14725376094). |
+
+La ejecución anterior al arreglo de arranque pasó 41 pruebas unitarias y 10 de interfaz. El caso de instalación limpia agotó el tiempo al iniciar el proceso de XCTest. El workflow comenzó a arrancar CoreSimulator antes de ejecutar la suite. El run siguiente pasó las 52 pruebas, pero un parámetro decorativo de la barra de estado falló. Se retiró ese paso y se dejó que XCTest instalara y abriera la app. [Timeout de arranque](https://github.com/he553484-oss/-STRSK-MUSIC/actions/runs/44946000063) · [52 pruebas aprobadas con el fallo del paso de preparación](https://github.com/he553484-oss/-STRSK-MUSIC/actions/runs/44947541276).
+
+Los logs están disponibles. La descarga de los ZIP de artefactos desde este entorno devolvió HTTP 403. La firma con una cuenta Apple y la instalación en un iPhone físico siguen pendientes. [Extracto verificable](evidence/strsk-ios-ci.log).
+
 ## M3 · Validación en GitHub Actions
 
 El runner GitHub macOS arm64 ejecutó Xcode 26.6 (17F113) con el árbol original de Luma en SHA `7006a4b51aa3bc5a1175036ea7ec83034fdccbfe`. El workflow exitoso corresponde al commit `7bf0169` de la rama `m3/luma-baseline`. [GitHub Actions](https://github.com/he553484-oss/-STRSK-MUSIC/actions/runs/44935462635).

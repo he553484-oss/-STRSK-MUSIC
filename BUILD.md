@@ -61,7 +61,9 @@ scripts/test-portable-upstream.sh /ruta/a/los/checkouts
 
 El proyecto se abre con Xcode 26.6 y conserva el esquema interno `Luma` para ejecutar las pruebas existentes. El nombre que muestra iOS es **STRSK MUSIC**. En `Build Settings`, ajusta `STRSK_BUNDLE_IDENTIFIER` para establecer un identificador válido y consistente. El valor inicial es `com.strskmusic.player`. Los objetivos de pruebas derivan sus identificadores del mismo ajuste. Se conserva el modo de audio en segundo plano.
 
-El [workflow de M4](.github/workflows/ios-strsk.yml) construye el fork y genera una IPA de dispositivo sin firma, con su SHA-256. Localmente se obtiene el mismo tipo de paquete en macOS:
+El [workflow de M4](.github/workflows/ios-strsk.yml) construye el fork y genera una IPA de dispositivo sin firma, con su SHA-256. El paquete corresponde al commit `b2ee079`. [IPA arm64 y SHA-256](https://github.com/he553484-oss/-STRSK-MUSIC/actions/runs/44948114019/artifacts/14725376094).
+
+Localmente se obtiene el mismo tipo de paquete en macOS:
 
 ```bash
 results="$(mktemp -d)"

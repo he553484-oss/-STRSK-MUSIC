@@ -1,0 +1,21 @@
+GitHub Actions run 44948114019 · commit b2ee07903a766a65d044e4d08b20f00c3c17b1c6
+2026-11-21T20:47:27.8339790Z Xcode 26.6
+2026-11-21T20:47:27.8376700Z Build version 17F113
+2026-11-21T20:47:35.2348540Z Model=iPhone 15 Pro
+2026-11-21T20:47:35.2355730Z Runtime=com.apple.CoreSimulator.SimRuntime.iOS-26-5
+2026-11-21T20:48:52.5101390Z ** BUILD SUCCEEDED **
+2026-11-21T20:48:55.6613420Z Bundle: com.strskmusic.player
+2026-11-21T20:48:55.6614230Z Plataforma: iPhoneOS arm64
+2026-11-21T20:51:14.0415560Z ** TEST BUILD SUCCEEDED **
+2026-11-21T20:56:03.2471480Z ✔ Test run with 41 tests in 4 suites passed after 15.212 seconds.
+2026-11-21T21:08:00.8752810Z Test Case '-[LumaUITests.LumaUITests testSTRSKAlbumOpensAndPlaysFromItsTrackList]' passed (25.654 seconds).
+2026-11-21T21:08:00.8786910Z 	 Executed 11 tests, with 0 failures (0 unexpected) in 697.278 (697.304) seconds
+2026-11-21T21:08:00.8790790Z 	 Executed 11 tests, with 0 failures (0 unexpected) in 697.278 (697.305) seconds
+2026-11-21T21:08:00.8792720Z 	 Executed 11 tests, with 0 failures (0 unexpected) in 697.278 (697.307) seconds
+2026-11-21T21:08:03.1214460Z ** TEST EXECUTE SUCCEEDED **
+2026-11-21T21:08:14.0247360Z File: 250A0124-F3F8-4CDC-919C-D6F52D2DF52B.png, suggested name: "STRSK Now Playing_0_1A5C8465-DC12-40FB-B9AE-D80D16BC7214.png"
+2026-11-21T21:08:14.0248760Z File: 7A5B1923-06B6-40AE-9E1D-8B616A776C0F.png, suggested name: "STRSK Album_0_052C9C80-978F-4196-AB57-62F2B89E36A7.png"
+2026-11-21T21:08:14.0250510Z File: 2E21826B-CAF7-4203-B362-78AC10E0984F.png, suggested name: "STRSK Library_0_C6852272-217E-4BA8-A57A-699AA1FB8FF4.png"
+2026-11-21T21:08:14.0251730Z File: 2B87148A-7020-4B77-A6C9-8D26ECCB0477.png, suggested name: "STRSK Listen_0_B7AA15BE-B2E9-43E4-81D4-2E908AC22FBC.png"
+2026-11-21T21:08:21.6573420Z Artifact strsk-ios-verification successfully finalized. Artifact ID 14725460886
+2026-11-21T21:08:23.2609090Z Artifact strsk-unsigned-ipa successfully finalized. Artifact ID 14725376094
