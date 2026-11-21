@@ -15,6 +15,12 @@
 
 Cada hito de aplicación requiere build, test y commit que registre la evidencia. Un fallo queda abierto en el hito donde se observó.
 
+## Preparación de M5 mientras M3 está bloqueado
+
+La revisión dirigida confirmó dos puntos de integración. Erhu ya parsea Enhanced LRC con marcadores explícitos y aporta pruebas del cursor. MRSC `WordLine` sirve como referencia de renderizado, pero `wordTimings(for:end:)` estima tiempos cuando faltan. En M5 se adaptará el parser de Erhu con sus avisos GPLv3 y se conectará el renderizado de SwiftUI al reloj de Luma. Si solo hay tiempos de línea, se activará el resaltado por línea.
+
+La regresión obligatoria incluye un offset de `Int64.min` con una línea y palabras válidas. Tras ignorar el offset inválido, deben conservarse sus marcas originales. Probar también que el resaltado se detiene con pausa, responde a seek en ambos sentidos y descarta el documento anterior al cambiar de canción. La prueba de interfaz debe verificar que una pulsación sobre la línea hace seek a su marca y que el scroll sigue la nueva posición. Estas pruebas se ejecutarán sobre el fork una vez validado M3. [Procedencia](COMPONENT_PROVENANCE.md).
+
 ## Pruebas de integración previstas
 
 - Letras con intervalos originales de prueba. Verificar bordes de palabra y línea a un milisegundo de cada marcador, desfases extremos, reanudación, cambio de velocidad, seek adelante y atrás, repetidos, silencios, TTML malformado y un documento largo. Reportar por separado error del índice y latencia de presentación. Medir frames y scroll con render real.

@@ -2,7 +2,7 @@
 
 ## M3 · Verificar el proyecto original
 
-Requisitos del verificador local: macOS, Xcode con iOS SDK 26 o posterior, simulador iPhone con iOS 26 o posterior, Python 3 y Git. En GitHub Actions el job selecciona Xcode 26.6 en un runner `macos-26`. Selecciona iPhone 15 Pro si está disponible. Un UUID de simulador explícito se puede proporcionar mediante `STRSK_SIMULATOR_ID`. [Software del runner](https://github.com/actions/runner-images/blob/main/images/macos/macos-26-Readme.md).
+El verificador local requiere macOS, Xcode con iOS SDK 26 o posterior, simulador iPhone con iOS 26 o posterior, Python 3 y Git. GitHub documenta el runner `macos-26` con Xcode 26.6 e iOS Simulator 26.5. El job prefiere un iPhone 15 Pro configurado e intenta crearlo si la imagen ofrece el tipo de dispositivo para ese runtime. Si CoreSimulator no puede crearlo, el job usa un iPhone compatible y registra el modelo efectivo. En macOS se puede seleccionar un UUID con `STRSK_SIMULATOR_ID`. [Runners disponibles](https://docs.github.com/en/actions/reference/runners/github-hosted-runners) · [Inventario de Xcode y simuladores](https://github.com/actions/runner-images/blob/main/images/macos/macos-26-Readme.md).
 
 Desde el repositorio de auditoría:
 
@@ -12,7 +12,42 @@ git -C ../luma-ios checkout --detach 7006a4b51aa3bc5a1175036ea7ec83034fdccbfe
 scripts/verify-luma-baseline.sh ../luma-ios "$(mktemp -d)"
 ```
 
-El script verifica el SHA y el estado limpio, compila Release para iOS arm64 sin firma y ejecuta los tests unitarios y de interfaz del esquema original en simulador. Guarda el inventario de SDK, logs y paquetes `.xcresult`. Usa un directorio de resultados nuevo por ejecución. El workflow fija el checkout upstream y las revisiones de sus acciones. [Workflow](.github/workflows/ios-baseline.yml).
+El script verifica el SHA y el estado limpio del checkout original. Ejecuta Release para iOS arm64, `build-for-testing` en simulador y, si compila, `test-without-building` con los tests unitarios y de interfaz del esquema Luma. Los tres comandos usan `CODE_SIGNING_ALLOWED=NO`. Guarda el inventario de SDK, el destino efectivo, los logs y los paquetes `.xcresult`. Usa un directorio de salida nuevo por ejecución. [Workflow](.github/workflows/ios-baseline.yml).
+
+### Ejecutar en GitHub Actions
+
+Usar un repositorio GitHub de destino con Actions habilitado, acceso de escritura para publicar workflows y cuota para un runner macOS. Si la variable de token de esta sesión sigue siendo inválida, limpia esas variables en la terminal antes de iniciar sesión. Sustituye `OWNER/REPO` por el destino autorizado.
+
+```bash
+cd /workspace/STRSK-MUSIC
+unset GH_TOKEN GITHUB_TOKEN
+gh auth login --hostname github.com --git-protocol https --web
+gh auth refresh --hostname github.com --scopes workflow
+gh auth setup-git --hostname github.com
+
+repo=OWNER/REPO
+branch=m3/luma-baseline
+commit="$(git rev-parse HEAD)"
+git push "https://github.com/$repo.git" "HEAD:refs/heads/$branch"
+gh run list -R "$repo" --workflow ios-baseline.yml --branch "$branch" \
+  --commit "$commit" --event push --limit 5
+```
+
+GitHub activa el job con ese push. Si la lista todavía está vacía, vuelve a consultarla tras unos segundos. Usa el ID que corresponda al SHA publicado.
+
+```bash
+read -r -p 'ID del run mostrado por GitHub: ' run_id
+gh run watch "$run_id" -R "$repo" --exit-status
+gh run view "$run_id" -R "$repo" --log > "luma-baseline-$run_id.log"
+artifacts="$(mktemp -d)"
+gh run download "$run_id" -R "$repo" -n luma-baseline-validation -D "$artifacts"
+cat "$artifacts/upstream-commit.txt" "$artifacts/selected-simulator.txt" "$artifacts/status.log"
+if [ -f "$artifacts/xcode-results.tar.gz" ]; then
+  tar -xzf "$artifacts/xcode-results.tar.gz" -C "$artifacts"
+fi
+```
+
+Descarga los artefactos también cuando el job falle. Una ejecución cancelada o detenida antes de compilar puede dejar solo el log del job. M3 queda validado cuando el SHA coincide con Luma fijado y el Release, la compilación de simulador y su suite devuelven cero. Conserva el enlace del run y sus resultados antes de iniciar M4.
 
 ## Pruebas portables
 

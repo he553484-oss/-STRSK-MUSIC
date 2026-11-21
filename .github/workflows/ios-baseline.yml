@@ -27,10 +27,30 @@ jobs:
           persist-credentials: false
 
       - name: Select Xcode 26.6
-        run: sudo xcode-select -s /Applications/Xcode_26.6.app/Contents/Developer
+        run: |
+          mkdir -p "$RUNNER_TEMP/luma-baseline"
+          sudo xcode-select -s /Applications/Xcode_26.6.app/Contents/Developer +            2>&1 | tee "$RUNNER_TEMP/luma-baseline/xcode-select.log"
+        shell: bash
 
-      - name: Build Release arm64 and run original simulator tests
-        run: scripts/verify-luma-baseline.sh upstream-luma "$RUNNER_TEMP/luma-baseline"
+      - name: Build Release arm64 and build and test on iPhone Simulator
+        run: |
+          scripts/verify-luma-baseline.sh upstream-luma "$RUNNER_TEMP/luma-baseline" +            2>&1 | tee "$RUNNER_TEMP/luma-baseline/verification.log"
+        shell: bash
+
+      - name: Archive Xcode result bundles
+        if: always()
+        run: |
+          results="$RUNNER_TEMP/luma-baseline"
+          shopt -s nullglob
+          bundles=("$results"/*.xcresult)
+          if (( ${#bundles[@]} )); then
+            names=()
+            for bundle in "${bundles[@]}"; do
+              names+=("${bundle##*/}")
+            done
+            tar -czf "$results/xcode-results.tar.gz" -C "$results" "${names[@]}"
+          fi
+        shell: bash
 
       - name: Upload logs and result bundles
         if: always()
@@ -41,5 +61,5 @@ jobs:
             ${{ runner.temp }}/luma-baseline/*.log
             ${{ runner.temp }}/luma-baseline/*.json
             ${{ runner.temp }}/luma-baseline/*.txt
-            ${{ runner.temp }}/luma-baseline/*.xcresult
+            ${{ runner.temp }}/luma-baseline/xcode-results.tar.gz
           if-no-files-found: warn

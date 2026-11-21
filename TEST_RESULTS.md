@@ -19,3 +19,9 @@ Entorno Debian 13, Linux x86_64. Swift 6.3.2 se instaló para ejecutar pruebas p
 - [Resumen de AudioMarker](evidence/audio-marker.log)
 
 Los 46 tests portables son de candidatos upstream. No se ha observado la app abierta ni la integración de STRSK. Importación nativa, reproducción, persistencia, temporización con reloj real, render, red autorizada, firma e instalación siguen pendientes. No se midieron CPU, latencia, memoria, FPS ni batería en iPhone. No se produjo una IPA.
+
+## Continuación de M3
+
+Se verificó el SHA y el estado limpio del checkout original. El inventario publicado para `macos-26` confirma Xcode 26.6 y el simulador iOS 26.5. El workflow separa los resultados de Release, compilación de simulador y ejecución de la suite, y guarda los paquetes Xcode en un tar comprimido. La ejecución local volvió a detenerse con código 127 porque falta `xcodebuild`. GitHub CLI rechazó la credencial del entorno y el repositorio carece de remoto configurado. El job macOS sigue sin ejecutarse. [Comandos para publicar y recoger los resultados](BUILD.md#ejecutar-en-github-actions).
+
+`actionlint` 1.7.11 y `bash -n` pasaron. Con ejecutables de prueba en Linux se comprobaron cinco rutas del script: creación del iPhone 15 Pro, uso de un iPhone alternativo, UUID explícito, fallo de compilación de simulador y fallo de tests. Estas pruebas verifican la lógica del script. Se repitieron las dos suites portables existentes. Pasaron 8 pruebas de Luma y 8 de Erhu.
