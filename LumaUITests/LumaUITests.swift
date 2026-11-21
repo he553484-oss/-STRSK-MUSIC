@@ -220,7 +220,7 @@ final class LumaUITests: XCTestCase {
         XCTAssertTrue(app.buttons["Play Amber by Artwork test"].waitForExistence(timeout: 5))
         capture(app, name: "Luma Color Library")
         app.buttons["Play Amber by Artwork test"].tap()
-        XCTAssertTrue(app.staticTexts["NOW PLAYING"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["player.header"].waitForExistence(timeout: 5))
         app.buttons["player.playPause"].tap()
     }
 
@@ -266,7 +266,7 @@ final class LumaUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["STRSK MUSIC"].waitForExistence(timeout: 10))
         capture(app, name: "Luma Listen")
         app.buttons["Open now playing"].tap()
-        XCTAssertTrue(app.staticTexts["NOW PLAYING"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["player.header"].waitForExistence(timeout: 5))
         let visualizer = app.otherElements["player.visualizer"]
         XCTAssertTrue(visualizer.waitForExistence(timeout: 5))
         XCTAssertEqual(visualizer.value as? String, "Paused")

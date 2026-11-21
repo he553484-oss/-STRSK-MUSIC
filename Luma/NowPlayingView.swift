@@ -27,7 +27,9 @@ struct NowPlayingView: View {
                             GlassIcon(symbol: "chevron.down", label: "Close now playing") { dismiss() }
                             Spacer()
                             VStack(spacing: 5) {
-                                Text("Now playing").font(.caption.weight(.semibold)).accessibilityAddTraits(.isHeader)
+                                Text("Now playing").font(.caption.weight(.semibold))
+                                    .accessibilityAddTraits(.isHeader)
+                                    .accessibilityIdentifier("player.header")
                                 Text(player.contextName).font(.caption2).foregroundStyle(Theme.secondary).lineLimit(1)
                             }
                             Spacer()

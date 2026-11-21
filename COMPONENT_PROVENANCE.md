@@ -1,6 +1,6 @@
 # Procedencia de componentes
 
-El árbol de STRSK contiene los documentos y automatizaciones originales de M1 a M3. Los archivos upstream se consultaron en checkouts independientes. El ejecutor portable extrae archivos del commit exacto en un directorio temporal y lo descarta al terminar. En la columna de archivos se indica el alcance previsto de reutilización.
+La rama M4 deriva de Luma `7006a4b51aa3bc5a1175036ea7ec83034fdccbfe` bajo AGPLv3 y conserva su historial, código fuente y licencia. Los cambios de identidad, icono, SwiftUI y CI están descritos en los commits M4. `ArtworkLoader`, `LibraryRepository`, `MusicPlayer` y `GaplessScheduler` siguen siendo las implementaciones upstream. `LyricsTimeline.swift` y el icono son contribuciones STRSK. Las sugerencias de Erhu, MRSC y AudioMarker quedan pendientes de M5. El ejecutor portable extrae archivos del commit exacto en un directorio temporal y lo descarta al terminar. En la columna de archivos se indica el alcance previsto de reutilización.
 
 | Función | Repositorio de origen | Archivos evaluados para reutilizar | Estado de integración | Resultado de pruebas | Limitaciones |
 |---|---|---|---|---|---|

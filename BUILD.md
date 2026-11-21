@@ -57,8 +57,28 @@ Con Swift 6.3, Python 3 y los clones fijados de Luma y Erhu en un directorio com
 scripts/test-portable-upstream.sh /ruta/a/los/checkouts
 ```
 
-## IPA · M10
+## M4 · Build y firma para AltStore Classic
 
-El proyecto STRSK derivado tendrá un identificador propio y `UIBackgroundModes = audio`. Para el build de AltStore se usará Release, SDK de dispositivo y arm64. El empaquetado toma el directorio `.app` de ese build, lo copia manteniendo su estructura bajo `Payload/` y comprime `Payload` en una IPA. Se verifican el contenido, plataforma, arquitectura, identificador y código fuente correspondiente antes de distribuir. La IPA preparada para que AltStore la firme y la validación del binario ya firmado en hardware son dos verificaciones distintas. M3 reúne evidencia de compilación y pruebas del original.
+El proyecto se abre con Xcode 26.6 y conserva el esquema interno `Luma` para ejecutar las pruebas existentes. El nombre que muestra iOS es **STRSK MUSIC**. En `Build Settings`, ajusta `STRSK_BUNDLE_IDENTIFIER` para establecer un identificador válido y consistente. El valor inicial es `com.strskmusic.player`. Los objetivos de pruebas derivan sus identificadores del mismo ajuste. Se conserva el modo de audio en segundo plano.
 
-Para instalar la IPA de STRSK cuando esté disponible, configurar AltServer y AltStore Classic, activar el Modo de desarrollador si iOS lo solicita, abrir la IPA desde el botón **+** de **My Apps** o desde Archivos e instalar. Mantener la firma vigente mediante la actualización de AltStore. En el primer arranque se comprueban audio local, bloqueo, Control Center, AirPlay y reanudación. La arquitectura de la app usa frameworks nativos sin JIT ni jailbreak. La instalación aún requiere validación en iPhone 15 Pro. [Guía de AltStore Classic](https://faq.altstore.io/altstore-classic/your-altstore).
+El [workflow de M4](.github/workflows/ios-strsk.yml) construye el fork y genera una IPA de dispositivo sin firma, con su SHA-256. Localmente se obtiene el mismo tipo de paquete en macOS:
+
+```bash
+results="$(mktemp -d)"
+xcodebuild -project Luma.xcodeproj -scheme Luma -configuration Release \
+  -destination 'generic/platform=iOS' -derivedDataPath "$results/build" \
+  STRSK_BUNDLE_IDENTIFIER=com.strskmusic.player ARCHS=arm64 CODE_SIGNING_ALLOWED=NO build
+
+scripts/package-strsk-ipa.sh "$results/build/Build/Products/Release-iphoneos/Luma.app" \
+  "$results/STRSK-MUSIC-unsigned.ipa"
+(cd "$results" && shasum -a 256 -c STRSK-MUSIC-unsigned.ipa.sha256)
+```
+
+El script comprueba el nombre, la plataforma de dispositivo y la arquitectura arm64, y empaqueta bajo `Payload/STRSK MUSIC.app`. La IPA de CI carece de firma y perfil de aprovisionamiento. La cuenta Apple y el dispositivo de destino son necesarios para obtener una firma válida mediante AltStore. [AltServer](https://faq.altstore.io/altstore-classic/altserver).
+
+1. Instala AltServer en tu Mac o PC y, desde AltServer, instala AltStore Classic en el iPhone. Usa tu propia cuenta Apple y sigue los pasos de confianza del [instalador oficial de AltStore Classic](https://faq.altstore.io/altstore-classic/how-to-install-altstore-classic).
+2. Activa **Modo de desarrollador** en **Ajustes → Privacidad y seguridad** si iOS lo solicita. Reinicia y confirma. [Documentación de Apple](https://developer.apple.com/documentation/xcode/enabling-developer-mode-on-a-device/).
+3. Descarga y descomprime el artefacto `strsk-unsigned-ipa`. Guarda `STRSK-MUSIC-unsigned.ipa` en Archivos. Abre AltStore Classic, entra en **My Apps**, toca **+** y selecciona la IPA. Mantén el iPhone conectado por USB o en la misma red que AltServer mientras firma e instala. [AltStore Classic](https://faq.altstore.io/altstore-classic/your-altstore) · [AltServer](https://faq.altstore.io/altstore-classic/altserver).
+4. En el iPhone, abre la app e importa una pista desde Archivos. Comprueba reproducción con pantalla bloqueada, Control Center, reanudación y, si tienes una ruta disponible, AirPlay. La app usa AVFoundation y SwiftUI sin JIT ni jailbreak.
+
+Para ejecutar directamente desde Xcode en un iPhone emparejado, elige tu Apple Development Team y un identificador disponible en **Signing & Capabilities**, con firma automática. Mantén la identidad y los certificados en el llavero local. CI usa `CODE_SIGNING_ALLOWED=NO`. El repositorio público carece de credenciales Apple, certificados privados y perfiles. Una prueba de instalación con AltStore en hardware sigue pendiente.
