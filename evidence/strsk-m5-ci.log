@@ -1,0 +1,24 @@
+M5 · GitHub Actions 44954613736 · 8a1795234743c08cf053faa0d5c0ce07316c60c1
+2026-11-21T22:02:25.2048600Z Xcode 26.6
+2026-11-21T22:02:25.2050340Z Build version 17F113
+2026-11-21T22:03:15.4323470Z Model=iPhone 15 Pro
+2026-11-21T22:03:15.4325240Z Runtime=com.apple.CoreSimulator.SimRuntime.iOS-26-5
+2026-11-21T22:04:24.9534110Z ** BUILD SUCCEEDED **
+2026-11-21T22:06:24.8307540Z ** TEST BUILD SUCCEEDED **
+2026-11-21T22:10:19.8471960Z ✔ Test extremeErhuOffsetCannotOverflow() passed after 0.001 seconds.
+2026-11-21T22:10:20.1965900Z ✔ Test repeatedSeeksOnALongDocument() passed after 0.037 seconds.
+2026-11-21T22:10:24.5237700Z ✔ Test importedTimedFileFollowsRealAudioThroughPauseSeekRateAndTrackChange() passed after 0.768 seconds.
+2026-11-21T22:10:30.6092360Z ✔ Test run with 54 tests in 5 suites passed after 13.937 seconds.
+2026-11-21T22:13:37.7682280Z Test Case '-[LumaUITests.LumaUITests testImportedKaraokeFollowsAudioDuringPlaybackPauseAndSeek]' passed (51.767 seconds).
+2026-11-21T22:21:08.5484750Z 	 Executed 12 tests, with 0 failures (0 unexpected) in 622.478 (622.509) seconds
+2026-11-21T22:21:08.5487600Z 	 Executed 12 tests, with 0 failures (0 unexpected) in 622.478 (622.511) seconds
+2026-11-21T22:21:08.5488510Z 	 Executed 12 tests, with 0 failures (0 unexpected) in 622.478 (622.513) seconds
+2026-11-21T22:21:11.1440870Z ** TEST EXECUTE SUCCEEDED **
+2026-11-21T22:22:29.1864920Z Test Case '-[LumaUITests.LumaUITests testImportedKaraokeFollowsAudioDuringPlaybackPauseAndSeek]' passed (45.018 seconds).
+2026-11-21T22:22:30.8881720Z ** TEST EXECUTE SUCCEEDED **
+2026-11-21T22:22:33.2493320Z Wrote video to: /Users/runner/work/_temp/strsk-ios/STRSK-Karaoke.mp4
+2026-11-21T22:22:40.0864310Z File: 032E0ED5-F924-4977-88B1-82B1E78B2317.png, suggested name: "M5 Karaoke · instrumental_0_99E4E661-2CC1-440D-AC0B-FEC79D4AFF84.png"
+2026-11-21T22:22:40.0867780Z File: C2A54CAE-7DCC-45B9-A482-AE38207D0A98.png, suggested name: "M5 Karaoke · paused seek_0_B8E0121C-EF06-4B2A-8F3E-51B6D3FBE16B.png"
+2026-11-21T22:22:40.0868670Z File: 6B69BF65-913B-4C32-8974-8BD3A21BF33C.png, suggested name: "M5 Karaoke · progressive fill_0_03E74F8B-E117-4B9F-B035-248794ABF589.png"
+2026-11-21T22:22:49.3817780Z Artifact strsk-ios-verification successfully finalized. Artifact ID 14726799609
+2026-11-21T22:22:50.4271760Z Artifact strsk-unsigned-ipa successfully finalized. Artifact ID 14726554985

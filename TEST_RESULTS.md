@@ -1,5 +1,22 @@
 # Resultados · 21 de noviembre de 2026
 
+## M5 · Karaoke nativo en iOS
+
+GitHub Actions probó `8a1795234743c08cf053faa0d5c0ce07316c60c1` con Xcode 26.6 (17F113), Release iPhoneOS arm64 y un simulador iPhone 15 Pro con iOS 26.5. [Run exitoso](https://github.com/he553484-oss/-STRSK-MUSIC/actions/runs/44954613736).
+
+| Verificación | Resultado |
+|---|---|
+| Build Release de dispositivo y build para iPhone Simulator | Ambos aprobados. |
+| Swift Testing | 54 pruebas en cinco suites, sin fallos. Se verifica el offset extremo de Erhu, sílabas TTML, voces simultáneas, traducciones, Unicode y RTL, corrupción, tiempos duplicados o fuera de orden y el índice de intervalos. |
+| Importación y reloj | Archivos de audio y Enhanced LRC escritos en disco. Se comprobaron los importadores del producto, la asociación SQLite, pausa, cambios de posición, reanudación a 1,5× y cambio de pista con AVAudioPlayer. |
+| XCTest UI | 12 pruebas sin fallos. La nueva prueba reproduce una pista de audio original importada con su archivo Enhanced LRC y comprueba el estado al pausar, buscar una línea y entrar en un intervalo instrumental. La automatización invoca el importador directamente para preparar el archivo, sin interactuar con el selector del sistema. |
+| Evidencia visual | Tres PNG de XCTest y `STRSK-Karaoke.mp4` generados por una ejecución adicional del mismo recorrido. `screenshots/manifest.json` relaciona las etiquetas de captura con los PNG. [Capturas, video y xcresult](https://github.com/he553484-oss/-STRSK-MUSIC/actions/runs/44954613736/artifacts/14726799609). |
+| Distribución | IPA arm64 sin firma, SHA-256, licencias y referencia al código fuente que generó el binario. [Artefacto IPA](https://github.com/he553484-oss/-STRSK-MUSIC/actions/runs/44954613736/artifacts/14726554985). |
+
+La prueba del índice con 12.000 líneas y 1.400 búsquedas por salto tardó 0,037 s en el simulador de CI. Es la duración del test completo del índice, con aserciones, y no mide el renderizado ni el rendimiento del iPhone físico. Quedan pendientes las trazas de CPU, batería y FPS en hardware.
+
+El flujo de prueba no sustituye el reloj ni genera posiciones de reproducción. XCTest escribe archivos originales y el reproductor los importa, persiste y reproduce con la misma ruta de producción. La descarga del ZIP de evidencia desde el entorno de trabajo devolvió HTTP 403. GitHub confirmó su publicación y el log identifica el MP4 y los PNG individuales. [Extracto del log](evidence/strsk-m5-ci.log).
+
 ## M4 · STRSK MUSIC en un iPhone 15 Pro simulado
 
 GitHub Actions probó el fork en `b2ee07903a766a65d044e4d08b20f00c3c17b1c6` sobre macOS arm64 con Xcode 26.6 (17F113). El simulador fue iPhone 15 Pro con iOS 26.5. [Run exitoso](https://github.com/he553484-oss/-STRSK-MUSIC/actions/runs/44948114019).

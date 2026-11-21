@@ -6,9 +6,12 @@ M1 y M2 completados. Luma es la base elegida, en `7006a4b51aa3bc5a1175036ea7ec83
 
 **M4 validado en iPhone 15 Pro simulado.** 41 pruebas unitarias y 11 de interfaz pasaron. La firma y la instalación en dispositivo se realizan con AltStore Classic. [GitHub Actions](https://github.com/he553484-oss/-STRSK-MUSIC/actions/runs/44948114019) · [IPA sin firma](https://github.com/he553484-oss/-STRSK-MUSIC/actions/runs/44948114019/artifacts/14725376094) · [Capturas y resultados de Xcode](https://github.com/he553484-oss/-STRSK-MUSIC/actions/runs/44948114019/artifacts/14725460886).
 
+**M5 validado.** Karaoke nativo con Enhanced LRC, LRC, TTML y YRC/KRC textuales. La prueba de recorrido importa audio y letras reales, comprueba reproducción, pausa y seek, y guarda capturas. [CI de iOS](https://github.com/he553484-oss/-STRSK-MUSIC/actions/runs/44954613736) · [MP4, capturas y resultados](https://github.com/he553484-oss/-STRSK-MUSIC/actions/runs/44954613736/artifacts/14726799609) · [IPA sin firma](https://github.com/he553484-oss/-STRSK-MUSIC/actions/runs/44954613736/artifacts/14726554985).
+
 | Documento | Contenido |
 |---|---|
 | [REPOSITORY_AUDIT.md](REPOSITORY_AUDIT.md) | SHA, candidatos, matriz, código y evidencia upstream |
+| [M5_COMPONENT_AUDIT.md](M5_COMPONENT_AUDIT.md) | Código reutilizado para letras, commits y licencias |
 | [ARCHITECTURE.md](ARCHITECTURE.md) | Base, motor y contratos seleccionados |
 | [COMPONENT_PROVENANCE.md](COMPONENT_PROVENANCE.md) | Tabla de funciones, archivos, pruebas y limitaciones |
 | [LICENSES.md](LICENSES.md) | Atribución, licencias y distribución |
