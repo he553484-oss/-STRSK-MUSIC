@@ -94,3 +94,26 @@ Para ejecutar directamente desde Xcode en un iPhone emparejado, elige tu Apple D
 Enhanced LRC acepta etiquetas de inicio por palabra y un marcador final opcional. Por ejemplo, `[00:02]<00:02>Lo <00:03>cal<00:04>` contiene dos intervalos completos. Las palabras cuyo fin se desconoce reciben un resaltado fijo al llegar su inicio. YRC y KRC se leen como texto decodificado. El perfil TTML incluye contenedores paralelos, párrafos y spans, tiempos de reloj y relativos, agentes explícitos y spans con rol de traducción.
 
 El workflow ejecuta el esquema original sobre el fork y graba otra ejecución del recorrido de karaoke. Las pruebas crean archivos originales de audio y Enhanced LRC e invocan los mismos importadores que usa Archivos. XCTest exporta las capturas. `simctl` graba la pantalla real del simulador. El audio y las letras de prueba solo se generan en builds Debug mediante los argumentos de prueba. [Auditoría de componentes](M5_COMPONENT_AUDIT.md).
+
+## M6 · Compilar BitChord sin modificaciones
+
+El verificador requiere un Mac Apple Silicon, Xcode 27 y un runtime iOS 26 para iPhone 15 Pro. Xcode 27 compila contra el SDK que declara BitChord; el punto de instalación que comprueba el smoke test es iOS 26. Usa JDK 21, Rust y sus tres targets Apple, CMake, XcodeGen y Python 3. Gradle usa el wrapper que trae el checkout fijado. La prueba del original es independiente de la compilación de STRSK MUSIC. [Workflow del original](.github/workflows/ios-bitchord-baseline.yml) · [Auditoría M6](M6_BITCHORD_AUDIT.md).
+
+```bash
+export DEVELOPER_DIR=/Applications/Xcode_27.app/Contents/Developer
+export JAVA_HOME="$(/usr/libexec/java_home -v 21)"
+brew install cmake xcodegen
+rustup target add aarch64-apple-darwin aarch64-apple-ios aarch64-apple-ios-sim
+
+export BITCHORD_REVISION=9c20ef321f311a3dd3f051ebd820abbc8f952413
+git clone https://github.com/bagumamartin/BitChord.git ../bit-chord-original
+git -C ../bit-chord-original checkout --detach "$BITCHORD_REVISION"
+export RUNNER_TEMP="$(mktemp -d)"
+export EVIDENCE_DIR="$RUNNER_TEMP/bitchord-evidence"
+scripts/verify-bitchord-baseline.sh ../bit-chord-original
+cat "$EVIDENCE_DIR/stages.txt"
+```
+
+El script construye NativeCoreFFI y BitChordShared, genera el proyecto Xcode y ejecuta Release arm64 y Release para simulador con firma deshabilitada. Conserva los resultados de XCTest si los produce Xcode, el inventario de destinos y la captura si la app original abre en iOS 26. Los tests automatizados de Rust, Kotlin/Native y los verificadores Swift se ejecutan por separado. El proyecto fijado genera una app y un widget sin target XCTest para iOS.
+
+Para instalar una IPA de STRSK MUSIC usa el procedimiento de AltStore Classic de M4 y el artefacto del commit que quieras validar. Una captura del simulador de BitChord y una IPA de STRSK de M5 tienen alcances distintos. En BitChord original, los App Groups, iCloud y el widget requieren comprobar los entitlements resultantes en el perfil del dispositivo. Ninguna comprobación del simulador acredita firma, instalación en un iPhone ni audio con pantalla bloqueada.
