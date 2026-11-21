@@ -203,7 +203,7 @@ struct LibraryView: View {
                     }
                     Button("Cancel", role: .cancel) { pendingDeletion = [] }
                 } message: {
-                    Text("This deletes Luma’s copies, saved lyrics, and playlist entries. Original files in Files or VLC stay unchanged. This cannot be undone.")
+                    Text("This deletes STRSK MUSIC’s copies, saved lyrics, and playlist entries. Original files in Files or VLC stay unchanged. This cannot be undone.")
                 }
         }
     }

@@ -83,7 +83,7 @@ struct PlayerSettingsView: View {
                     Button("Clear listening history", role: .destructive) { clearHistory = true }.disabled(player.recentIDs.isEmpty)
                 }
                 LibraryBackupView()
-                Section { Text("Luma\n\nYour audio, playlists, and lyrics are stored on this device.").font(.footnote).foregroundStyle(Theme.secondary) }
+                Section { Text("STRSK MUSIC\n\nYour audio, playlists, and lyrics are stored on this device.").font(.footnote).foregroundStyle(Theme.secondary) }
             }
             .scrollContentBackground(.hidden).background { AppBackground() }
             .navigationTitle("Player settings").navigationBarTitleDisplayMode(.inline)

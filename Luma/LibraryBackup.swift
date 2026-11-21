@@ -14,7 +14,7 @@ struct LibraryBackup: Codable {
         guard backup.version == 1,
               Set(backup.library.importedTracks.map(\.id)).count == backup.library.importedTracks.count,
               Set(backup.library.playlists.map(\.id)).count == backup.library.playlists.count else {
-            throw LibraryRepository.StorageError("This is not a supported Luma backup.")
+            throw LibraryRepository.StorageError("This is not a supported library backup.")
         }
         guard (backup.library.analytics?.days ?? []).allSatisfy({ $0.plays >= 0 && $0.plays <= 1_000_000_000 && $0.completions >= 0 && $0.completions <= 1_000_000_000 && $0.seconds.isFinite && $0.seconds >= 0 && $0.seconds <= 3_153_600_000 }) else {
             throw LibraryRepository.StorageError("This backup contains invalid listening history.")
@@ -94,7 +94,7 @@ struct LibraryBackupView: View {
         } header: { Text("Backup and recovery") } footer: {
             Text("Backups contain playlists, favorites, lyrics, and listening history. Audio files are not included. Import your music before restoring on another device.")
         }
-        .fileExporter(isPresented: $exporting, document: document, contentType: .json, defaultFilename: "Luma-backup") { result in
+        .fileExporter(isPresented: $exporting, document: document, contentType: .json, defaultFilename: "STRSK-MUSIC-backup") { result in
             if case .failure(let error) = result { player.error = error.localizedDescription }
         }
         .fileImporter(isPresented: $importing, allowedContentTypes: [.json]) { result in

@@ -234,7 +234,7 @@ final class LumaUITests: XCTestCase {
 
     func testPlaybackLyricsRepeatShuffleAndSearch() throws {
         let app = launch()
-        XCTAssertTrue(app.staticTexts["Luma"].waitForExistence(timeout: 10))
+        XCTAssertTrue(app.staticTexts["STRSK MUSIC"].waitForExistence(timeout: 10))
         capture(app, name: "Luma Listen")
         app.buttons["Open now playing"].tap()
         XCTAssertTrue(app.staticTexts["NOW PLAYING"].waitForExistence(timeout: 5))

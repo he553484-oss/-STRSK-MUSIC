@@ -43,7 +43,7 @@ enum LyricsSearchError: LocalizedError {
         case .offline: "You’re offline. Connect to the internet and try again. Your saved lyrics are still available."
         case .timeout: "The lyrics search timed out. Please try again."
         case .unavailable: "LRCLIB is temporarily unavailable. Please try again later."
-        case .invalidResponse: "LRCLIB returned a response Luma couldn’t read. Please try again later."
+        case .invalidResponse: "LRCLIB returned a response STRSK MUSIC couldn’t read. Please try again later."
         }
     }
 }
@@ -56,7 +56,7 @@ actor LRCLIBClient: LyricsSearching {
     private var retryAfter = Date.distantPast
     private var nextRequest = Date.distantPast
 
-    init(session: URLSession = .shared, contact: String = Bundle.main.object(forInfoDictionaryKey: "LumaLyricsContact") as? String ?? "") {
+    init(session: URLSession = .shared, contact: String = Bundle.main.object(forInfoDictionaryKey: "STRSKLyricsContact") as? String ?? "") {
         self.session = session
         self.contact = contact.trimmingCharacters(in: .whitespacesAndNewlines)
     }
@@ -115,7 +115,7 @@ actor LRCLIBClient: LyricsSearching {
         components.percentEncodedQuery = components.percentEncodedQuery?.replacingOccurrences(of: "+", with: "%2B")
         var request = URLRequest(url: components.url!, timeoutInterval: 20)
         request.setValue("application/json", forHTTPHeaderField: "Accept")
-        request.setValue("Luma v1.0.1 (\(contact))", forHTTPHeaderField: "User-Agent")
+        request.setValue("STRSK MUSIC v1.0.1 (\(contact))", forHTTPHeaderField: "User-Agent")
         return request
     }
 

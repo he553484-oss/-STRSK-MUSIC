@@ -52,8 +52,8 @@ struct ListenView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 24) {
                     HStack {
-                        Image("LumaMark").resizable().scaledToFit().frame(width: 32, height: 32).accessibilityHidden(true)
-                        Text("Luma").font(.title.bold())
+                        Image("STRSKMark").resizable().scaledToFit().frame(width: 38, height: 38).accessibilityHidden(true)
+                        Text("STRSK MUSIC").font(.headline.weight(.black)).tracking(1.8).accessibilityAddTraits(.isHeader)
                         Spacer()
                         GlassIcon(symbol: "slider.horizontal.3", label: "Player settings") { showSettings = true }
                     }
@@ -133,7 +133,7 @@ struct TrackRow: View {
         .sheet(isPresented: $showInfo) { TrackInfoView(track: track) }
         .confirmationDialog("Remove \(track.title)?", isPresented: $confirmRemoval, titleVisibility: .visible) {
             Button("Remove from library", role: .destructive) { player.removeImportedTrack(track) }
-        } message: { Text("This removes Luma’s copy, saved lyrics, and playlist entries. Your original file stays in Files.") }
+        } message: { Text("This removes STRSK MUSIC’s copy, saved lyrics, and playlist entries. Your original file stays in Files.") }
     }
 }
 
