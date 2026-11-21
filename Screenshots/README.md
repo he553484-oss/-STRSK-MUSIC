@@ -1,6 +1,6 @@
-# Documentation screenshots
+# Simulator screenshots
 
-Current documentation captures:
+The checked-in images below document the original Luma interface. The STRSK iOS workflow exports real Simulator attachments, including STRSK Listen, Library, Album, and Now Playing, in its build-evidence artifact.
 
 | File | Screen |
 | --- | --- |
@@ -14,7 +14,7 @@ Current documentation captures:
 | [album-color-cool.png](album-color-cool.png) | Player with a cool album tint |
 | [album-color-library.png](album-color-library.png) | Library with a cool album tint |
 | [online-lyrics.png](online-lyrics.png), [lyrics-preview.png](lyrics-preview.png) | Lyrics search and preview using a local API stub |
-| [app-icons.png](app-icons.png) | Generated preview of current light, dark, and tinted icons |
+| [app-icons.png](app-icons.png) | Archived Luma light, dark, and tinted icon preview |
 
 They were captured at 1206 × 2622 on an iPhone 17 Pro simulator running iOS 26.2. All names are fictional. Covers come from Luma's procedural artwork renderer, tracks use generated silent 48-second WAV files, and listening statistics are synthetic. No external music, artwork, or lyrics were downloaded for these captures.
 
@@ -50,4 +50,4 @@ python3 Scripts/export_screenshots.py "$LUMA_CAPTURE_DIR/attachments"
 
 The export script reads `manifest.json` and updates every app screenshot listed above, including the existing filename aliases. It requires all eleven named captures before copying any files. Inspect the resulting images before updating the README. The chart dates follow the capture date; playback progress may vary slightly.
 
-The icon preview is generated separately by `swift Scripts/generate_logo_assets.swift`. It uses the current icon assets and does not contain app-screen content.
+Run `python3 Scripts/generate_resources.py` with Pillow to regenerate the STRSK icon and mark. This does not change app-screen captures.
