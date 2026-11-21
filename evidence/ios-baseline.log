@@ -1,0 +1,10 @@
+Linux x86_64
+7006a4b51aa3bc5a1175036ea7ec83034fdccbfe
++ xcodebuild -project Luma.xcodeproj -scheme Luma -configuration Release -destination generic/platform=iOS ARCHS=arm64 CODE_SIGNING_ALLOWED=NO build
+/bin/bash: line 80: xcodebuild: command not found
++ printf 'Release exit=%s\n' 127
+Release exit=127
++ xcodebuild -project Luma.xcodeproj -scheme Luma -destination 'platform=iOS Simulator,name=iPhone 15 Pro' CODE_SIGNING_ALLOWED=NO test
+/bin/bash: line 82: xcodebuild: command not found
++ printf 'Tests exit=%s\n' 127
+Tests exit=127

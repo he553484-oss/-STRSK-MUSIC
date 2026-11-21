@@ -1,0 +1,97 @@
+Building for debugging...
+[0/17] Write sources
+[4/17] Write swift-version-A37FBEE8BCB54B2.txt
+[6/23] Emitting module Luma
+[7/23] Compiling Erhu Regex16.swift
+[8/23] Compiling Erhu LyricsParser.swift
+[9/23] Emitting module Erhu
+[10/24] Compiling Luma LyricsService.swift
+[11/24] Compiling Luma LyricsDocument.swift
+[13/25] Wrapping AST for Erhu for debugging
+[14/27] Wrapping AST for Luma for debugging
+[16/29] Compiling ErhuTests LyricsParserTests.swift
+[17/29] Emitting module ErhuTests
+[18/30] Wrapping AST for ErhuTests for debugging
+[20/30] Compiling LumaTests LyricsServiceTests.swift
+<temp>/Tests/LumaTests/LyricsServiceTests.swift:102:64: warning: conformance of 'LyricsURLProtocol' to protocol 'Sendable' is already unavailable
+100 | }
+101 |
+102 | private final class LyricsURLProtocol: URLProtocol, @unchecked Sendable {
+    |                     |                                          `- warning: conformance of 'LyricsURLProtocol' to protocol 'Sendable' is already unavailable
+    |                     `- note: 'LyricsURLProtocol' inherits conformance to protocol 'Sendable' from superclass here
+103 |     static var handler: ((URLRequest) throws -> (HTTPURLResponse, Data))?
+104 |     static var requestCount = 0
+[21/30] Emitting module LumaTests
+<temp>/Tests/LumaTests/LyricsServiceTests.swift:102:64: warning: conformance of 'LyricsURLProtocol' to protocol 'Sendable' is already unavailable
+100 | }
+101 |
+102 | private final class LyricsURLProtocol: URLProtocol, @unchecked Sendable {
+    |                     |                                          `- warning: conformance of 'LyricsURLProtocol' to protocol 'Sendable' is already unavailable
+    |                     `- note: 'LyricsURLProtocol' inherits conformance to protocol 'Sendable' from superclass here
+103 |     static var handler: ((URLRequest) throws -> (HTTPURLResponse, Data))?
+104 |     static var requestCount = 0
+[22/31] <temp>/.build/x86_64-unknown-linux-gnu/debug/UpstreamAuditPackageDiscoveredTests.derived/all-discovered-tests.swift
+[23/31] Write sources
+[24/31] Wrapping AST for LumaTests for debugging
+[26/34] Compiling UpstreamAuditPackageDiscoveredTests LumaTests.swift
+[27/35] Compiling UpstreamAuditPackageDiscoveredTests ErhuTests.swift
+[28/35] Emitting module UpstreamAuditPackageDiscoveredTests
+[29/35] Compiling UpstreamAuditPackageDiscoveredTests all-discovered-tests.swift
+[30/36] <temp>/.build/x86_64-unknown-linux-gnu/debug/UpstreamAuditPackageTests.derived/runner.swift
+[31/36] Write sources
+[32/36] Wrapping AST for UpstreamAuditPackageDiscoveredTests for debugging
+[34/38] Emitting module UpstreamAuditPackageTests
+[35/38] Compiling UpstreamAuditPackageTests runner.swift
+[36/39] Wrapping AST for UpstreamAuditPackageTests for debugging
+[37/39] Write Objects.LinkFileList
+[38/39] Linking UpstreamAuditPackageTests.xctest
+Build complete! (22.40s)
+Test Suite 'All tests' started at 2026-11-21 17:28:43.267
+Test Suite 'debug.xctest' started at 2026-11-21 17:28:43.268
+Test Suite 'LyricsParserTests' started at 2026-11-21 17:28:43.268
+Test Case 'LyricsParserTests.testActiveLineAndWordComeFromABinarySearch' started at 2026-11-21 17:28:43.268
+Test Case 'LyricsParserTests.testActiveLineAndWordComeFromABinarySearch' passed (0.003 seconds)
+Test Case 'LyricsParserTests.testBlankLyricsAreNone' started at 2026-11-21 17:28:43.271
+Test Case 'LyricsParserTests.testBlankLyricsAreNone' passed (0.001 seconds)
+Test Case 'LyricsParserTests.testEnhancedLrcGivesWordTiming' started at 2026-11-21 17:28:43.271
+Test Case 'LyricsParserTests.testEnhancedLrcGivesWordTiming' passed (0.0 seconds)
+Test Case 'LyricsParserTests.testLineTimedLrcBecomesSyncedLinesInTimeOrder' started at 2026-11-21 17:28:43.272
+Test Case 'LyricsParserTests.testLineTimedLrcBecomesSyncedLinesInTimeOrder' passed (0.0 seconds)
+Test Case 'LyricsParserTests.testMalformedStampsAreIgnored' started at 2026-11-21 17:28:43.272
+Test Case 'LyricsParserTests.testMalformedStampsAreIgnored' passed (0.0 seconds)
+Test Case 'LyricsParserTests.testOffsetShiftsEveryTimestamp' started at 2026-11-21 17:28:43.272
+Test Case 'LyricsParserTests.testOffsetShiftsEveryTimestamp' passed (0.0 seconds)
+Test Case 'LyricsParserTests.testSeveralStampsOnOneLineRepeatIt' started at 2026-11-21 17:28:43.272
+Test Case 'LyricsParserTests.testSeveralStampsOnOneLineRepeatIt' passed (0.0 seconds)
+Test Case 'LyricsParserTests.testTextWithoutTimestampsIsPlain' started at 2026-11-21 17:28:43.272
+Test Case 'LyricsParserTests.testTextWithoutTimestampsIsPlain' passed (0.0 seconds)
+Test Suite 'LyricsParserTests' passed at 2026-11-21 17:28:43.273
+	 Executed 8 tests, with 0 failures (0 unexpected) in 0.005 (0.005) seconds
+Test Suite 'debug.xctest' passed at 2026-11-21 17:28:43.273
+	 Executed 8 tests, with 0 failures (0 unexpected) in 0.005 (0.005) seconds
+Test Suite 'All tests' passed at 2026-11-21 17:28:43.273
+	 Executed 8 tests, with 0 failures (0 unexpected) in 0.005 (0.005) seconds
+◇ Test run started.
+↳ Testing Library Version: 6.3.2 (70eff261d7f462c)
+↳ Target Platform: x86_64-unknown-linux-gnu
+◇ Suite LyricsServiceTests started.
+◇ Test requestEncodesMetadataAndIdentifiesClient() started.
+✔ Test requestEncodesMetadataAndIdentifiesClient() passed after 0.001 seconds.
+◇ Test resultsPreferMatchingDurationAndTimedLyrics() started.
+✔ Test resultsPreferMatchingDurationAndTimedLyrics() passed after 0.006 seconds.
+◇ Test emptySearchAndNotFoundAreNotErrors() started.
+✔ Test emptySearchAndNotFoundAreNotErrors() passed after 0.001 seconds.
+◇ Test honorsServerRetryAfterAcrossSearches(status:) started.
+◇ Test case passing 1 argument status → 429 to honorsServerRetryAfterAcrossSearches(status:) started.
+◇ Test case passing 1 argument status → 503 to honorsServerRetryAfterAcrossSearches(status:) started.
+✔ Test honorsServerRetryAfterAcrossSearches(status:) with 2 test cases passed after 0.001 seconds.
+◇ Test parsesBothRetryAfterFormats() started.
+✔ Test parsesBothRetryAfterFormats() passed after 0.002 seconds.
+◇ Test malformedAndNonJSONResponsesHaveUsefulErrors() started.
+✔ Test malformedAndNonJSONResponsesHaveUsefulErrors() passed after 0.001 seconds.
+◇ Test handlesOfflineTimeoutAndCancellation() started.
+✔ Test handlesOfflineTimeoutAndCancellation() passed after 0.001 seconds.
+◇ Test emptyTitleAndMissingClientIdentityMakeNoRequest() started.
+✔ Test emptyTitleAndMissingClientIdentityMakeNoRequest() passed after 0.001 seconds.
+✔ Suite LyricsServiceTests passed after 0.016 seconds.
+✔ Test run with 8 tests in 1 suite passed after 0.017 seconds.

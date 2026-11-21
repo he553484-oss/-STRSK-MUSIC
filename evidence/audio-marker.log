@@ -1,0 +1,9 @@
+Original Linux build: exit 1
+/workspace/scratch/strsk-upstream/swift-audio-marker/Sources/AudioMarker/Exporter/PodloveXMLExporter.swift:101:19: error: 'XMLParser' is unavailable: This type has moved to the FoundationXML module. Import that module to use it.
+
+Temporary Linux port with FoundationXML: exit 0
+Build complete! (89.17s)
+Test Suite 'Selected tests' passed at 2026-11-21 17:28:45.463
+✔ Suite "TTML Parser" passed after 0.005 seconds.
+✔ Suite "LRC Parser" passed after 0.005 seconds.
+✔ Test run with 30 tests in 2 suites passed after 0.006 seconds.
