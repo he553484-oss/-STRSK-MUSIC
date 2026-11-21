@@ -294,6 +294,11 @@ final class LumaUITests: XCTestCase {
         }
         XCTAssertTrue(keyboard.waitForExistence(timeout: 5))
         field.typeText(text)
+        if let entered = field.value as? String, !entered.isEmpty, entered != text, text.hasPrefix(entered) {
+            // The simulator can drop keystrokes while the keyboard finishes animating.
+            field.typeText(String(text.dropFirst(entered.count)))
+        }
+        XCTAssertEqual(field.value as? String, text, "The simulator must enter the intended text before submission.")
     }
 
     private func capture(_ app: XCUIApplication, name: String) {
