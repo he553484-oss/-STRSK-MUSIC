@@ -118,18 +118,20 @@ struct LyricLine: Identifiable, Equatable {
     var id: Int
     var time: TimeInterval?
     var text: String
+    var words: [LyricWord] = []
 }
 
 struct LyricsDocument {
     let lines: [LyricLine]
-    var isSynchronized: Bool { lines.contains { $0.time != nil } }
+    var timeline: LyricsTimeline { LyricsTimeline(lines: lines) }
+    var isSynchronized: Bool { timeline.isSynchronized }
 
     init(_ text: String) {
         let timestamp = try! NSRegularExpression(pattern: #"\[(\d{1,3}):(\d{2})(?:[\.:](\d{1,3}))?\]"#)
         let offsetPattern = try! NSRegularExpression(pattern: #"\[offset:([+-]?\d+)\]"#, options: .caseInsensitive)
         let nsText = text as NSString
         let offsetMatch = offsetPattern.firstMatch(in: text, range: NSRange(location: 0, length: nsText.length))
-        let offset = offsetMatch.flatMap { Double(nsText.substring(with: $0.range(at: 1))) }.map { $0 / 1000 } ?? 0
+        let offset = offsetMatch.flatMap { Double(nsText.substring(with: $0.range(at: 1))) }.flatMap { $0.isFinite ? $0 / 1000 : nil } ?? 0
         var timed: [(Double, String)] = []
         var plain: [String] = []
         for raw in text.components(separatedBy: .newlines) {
@@ -156,7 +158,9 @@ struct LyricsDocument {
         }
     }
 
-    func activeLine(at time: TimeInterval) -> Int? { lines.last(where: { ($0.time ?? .infinity) <= time })?.id }
+    func activeLine(at time: TimeInterval) -> Int? {
+        PlaybackLyricsSynchronizer().activeLine(in: timeline, at: time)
+    }
 }
 
 func formattedTime(_ interval: TimeInterval) -> String {

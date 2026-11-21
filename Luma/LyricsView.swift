@@ -11,8 +11,12 @@ struct LyricsView: View {
     @State private var showLookup = false
     @State private var followAlong = true
     private var text: String { player.lyrics[track.id] ?? "" }
-    private var document: LyricsDocument { LyricsDocument(text) }
-    private var activeLine: Int? { player.current.id == track.id ? document.activeLine(at: player.elapsed) : nil }
+    @State private var loaded: (source: String, timeline: LyricsTimeline)?
+    private var timeline: LyricsTimeline? { loaded?.source == text ? loaded?.timeline : nil }
+    private var activeLine: Int? {
+        guard let timeline, player.current.id == track.id else { return nil }
+        return PlaybackLyricsSynchronizer().activeLine(in: timeline, at: player.elapsed)
+    }
 
     var body: some View {
         NavigationStack {
@@ -40,8 +44,8 @@ struct LyricsView: View {
                         Button("Import lyrics file") { showImport = true }.font(.subheadline)
                     }.padding(32)
                     Spacer()
-                } else {
-                    if document.isSynchronized {
+                } else if let timeline {
+                    if timeline.isSynchronized {
                         HStack {
                             Label("TIME-SYNCED LYRICS", systemImage: "waveform").font(.system(size: 9, weight: .semibold)).tracking(1.5)
                             Spacer()
@@ -51,15 +55,15 @@ struct LyricsView: View {
                     ScrollViewReader { proxy in
                         ScrollView {
                             LazyVStack(alignment: .leading, spacing: 24) {
-                                ForEach(document.lines) { line in
+                                ForEach(timeline.lines) { line in
                                     if let time = line.time {
                                         Button {
                                             if player.current.id != track.id { player.select(track) }
                                             player.seek(to: time)
                                         } label: {
-                                            lyricText(line).frame(maxWidth: .infinity, alignment: .leading).contentShape(Rectangle())
+                                            lyricText(line, synchronized: timeline.isSynchronized).frame(maxWidth: .infinity, alignment: .leading).contentShape(Rectangle())
                                         }.buttonStyle(.plain).accessibilityLabel("\(line.text), seek to \(formattedTime(time))").id(line.id)
-                                    } else { lyricText(line).id(line.id) }
+                                    } else { lyricText(line, synchronized: timeline.isSynchronized).id(line.id) }
                                 }
                             }.padding(.horizontal, 26).padding(.vertical, 25).padding(.bottom, 100)
                         }
@@ -72,7 +76,18 @@ struct LyricsView: View {
                     // New documents reuse line indices; discard cached lazy rows when
                     // replacing plain text with timed lyrics (or editing existing lines).
                     .id(text)
+                } else {
+                    Spacer()
+                    ProgressView().accessibilityLabel("Loading lyrics")
+                    Spacer()
                 }
+            }
+            .task(id: text) {
+                let source = text
+                let provider = StoredLyricsProvider(texts: player.lyrics)
+                let result = await provider.timeline(for: track.id)
+                guard !Task.isCancelled else { return }
+                loaded = result.map { (source, $0) }
             }
             .background { AppBackground() }
             .navigationTitle("Lyrics").navigationBarTitleDisplayMode(.inline)
@@ -98,10 +113,10 @@ struct LyricsView: View {
             .modifier(PlayerFeedback())
         }
     }
-    private func lyricText(_ line: LyricLine) -> some View {
+    private func lyricText(_ line: LyricLine, synchronized: Bool) -> some View {
         Text(line.text.isEmpty ? "♪" : line.text)
             .font(.system(size: 29, weight: .semibold)).tracking(-0.7)
-            .foregroundStyle(!document.isSynchronized || activeLine == line.id ? .white : .white.opacity(0.32))
+            .foregroundStyle(!synchronized || activeLine == line.id ? .white : .white.opacity(0.32))
             .fixedSize(horizontal: false, vertical: true)
     }
 }
