@@ -37,7 +37,7 @@ struct LyricsView: View {
     }
 
     var body: some View {
-        let track = track
+        let track = self.track
         let key = LyricsLoadKey(trackID: track.id, text: player.lyrics[track.id] ?? "")
         NavigationStack {
             VStack(spacing: 0) {

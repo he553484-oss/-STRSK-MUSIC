@@ -2,6 +2,44 @@ import XCTest
 
 @MainActor
 final class LumaUITests: XCTestCase {
+    func testImportedKaraokeFollowsAudioDuringPlaybackPauseAndSeek() {
+        let app = XCUIApplication()
+        app.launchArguments = ["--ui-testing", "--reset-ui-state", "--import-strsk-karaoke"]
+        app.launch()
+
+        let mini = app.buttons["Open now playing"]
+        XCTAssertTrue(mini.waitForExistence(timeout: 16))
+        mini.tap()
+        let lyrics = app.buttons["player.lyrics"]
+        XCTAssertTrue(lyrics.waitForExistence(timeout: 8))
+        lyrics.tap()
+        XCTAssertTrue(app.staticTexts["Word-synced lyrics"].waitForExistence(timeout: 12))
+
+        let first = app.buttons["Signals through the wire, seek to 0:00"]
+        let second = app.buttons["After the quiet, seek to 0:24"]
+        let control = app.buttons["lyrics.playPause"]
+        XCTAssertTrue(first.waitForExistence(timeout: 8))
+        first.tap()
+        if control.label == "Play lyrics track" { control.tap() }
+        XCTAssertEqual(control.label, "Pause lyrics track")
+        XCTAssertEqual(first.value as? String, "Singing")
+        capture(app, name: "M5 Karaoke · progressive fill")
+
+        control.tap()
+        XCTAssertEqual(control.label, "Play lyrics track")
+        XCTAssertTrue(second.waitForExistence(timeout: 6))
+        second.tap()
+        XCTAssertEqual(control.label, "Play lyrics track")
+        XCTAssertEqual(second.value as? String, "Singing")
+        capture(app, name: "M5 Karaoke · paused seek")
+        let instrumental = app.buttons["Instrumental, seek to 0:38"]
+        if !instrumental.isHittable { app.swipeUp() }
+        XCTAssertTrue(instrumental.waitForExistence(timeout: 6))
+        instrumental.tap()
+        XCTAssertTrue(app.staticTexts["Instrumental"].firstMatch.waitForExistence(timeout: 5))
+        capture(app, name: "M5 Karaoke · instrumental")
+    }
+
     func testSTRSKAlbumOpensAndPlaysFromItsTrackList() throws {
         let app = launch()
         XCTAssertTrue(app.staticTexts["STRSK MUSIC"].waitForExistence(timeout: 10))

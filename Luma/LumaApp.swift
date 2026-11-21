@@ -16,6 +16,15 @@ struct STRSKMusicApp: App {
                 .environment(\.lyricsClient, Self.lyricsClient)
                 .preferredColorScheme(.dark)
                 .tint(Theme.accent)
+                #if DEBUG
+                .task {
+                    let arguments = ProcessInfo.processInfo.arguments
+                    if arguments.contains("--ui-testing"), arguments.contains("--import-strsk-karaoke"),
+                       player.tracks.isEmpty, !player.importing {
+                        await Self.importKaraokeFiles(into: player)
+                    }
+                }
+                #endif
                 .onChange(of: scenePhase) { _, phase in
                     if phase != .active { player.saveForBackground() }
                 }
@@ -58,6 +67,46 @@ struct STRSKMusicApp: App {
         buffer.frameLength = buffer.frameCapacity
         buffer.floatChannelData![0].initialize(repeating: 0, count: Int(buffer.frameLength))
         try AVAudioFile(forWriting: url, settings: format.settings).write(from: buffer)
+    }
+
+    /// Writes an original audible motif and matching lyric file. The normal
+    /// import APIs index, copy, associate and persist both files.
+    @MainActor
+    private static func importKaraokeFiles(into player: MusicPlayer) async {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString, isDirectory: true)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        do {
+            try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+            let audio = directory.appendingPathComponent("Signal Archive.wav")
+            let rate = 16_000.0
+            let format = AVAudioFormat(standardFormatWithSampleRate: rate, channels: 1)!
+            let buffer = AVAudioPCMBuffer(pcmFormat: format, frameCapacity: AVAudioFrameCount(rate * 54))!
+            buffer.frameLength = buffer.frameCapacity
+            let samples = buffer.floatChannelData![0]
+            let notes = [220.0, 261.63, 293.66, 196.0, 329.63, 261.63]
+            for frame in 0..<Int(buffer.frameLength) {
+                let time = Double(frame) / rate
+                let beat = time.truncatingRemainder(dividingBy: 0.65)
+                let frequency = notes[Int(time / 0.65) % notes.count]
+                let envelope = min(1, beat * 40) * exp(-beat * 3.8)
+                samples[frame] = Float(0.15 * envelope * (sin(2 * .pi * frequency * beat) + 0.31 * sin(4 * .pi * frequency * beat)))
+            }
+            try AVAudioFile(forWriting: audio, settings: format.settings).write(from: buffer)
+            let lyrics = directory.appendingPathComponent("Signal Archive.lrc")
+            let text = """
+            [ti:Signal Archive]
+            [00:00.00]<00:00.00>Signals <00:15.00>through <00:19.00>the wire<00:23.00>
+            [00:24.00]<00:24.00>After the <00:31.00>quiet<00:37.00>
+            [00:38.00]
+            [00:48.00]<00:48.00>نور <00:51.00>🎧<00:53.00>
+            """
+            try text.write(to: lyrics, atomically: true, encoding: .utf8)
+            await player.importFiles([audio])
+            guard let track = player.tracks.first else { return }
+            await player.importLyrics(lyrics, for: track)
+        } catch {
+            player.error = "Could not prepare karaoke fixtures: \(error.localizedDescription)"
+        }
     }
 
     /// Silent audio fixtures exist only after an explicit UI-test launch flag.

@@ -12,6 +12,8 @@ A72000000000000000000041 = {isa = PBXFileReference; lastKnownFileType = sourceco
 A72000000000000000000042 = {isa = PBXBuildFile; fileRef = A72000000000000000000041;};
 A72000000000000000000051 = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "KaraokeTextRenderer.swift"; sourceTree = "<group>";};
 A72000000000000000000052 = {isa = PBXBuildFile; fileRef = A72000000000000000000051;};
+A72000000000000000000061 = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LyricsTimelineTests.swift"; sourceTree = "<group>";};
+A72000000000000000000062 = {isa = PBXBuildFile; fileRef = A72000000000000000000061;};
 A70000000000000000000001 = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PlayerUpgradeTests.swift"; sourceTree = "<group>";};
 A70000000000000000000002 = {isa = PBXBuildFile; fileRef = A70000000000000000000001;};
 D759D0AD22E74515A0FCA9E8 = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LibraryBackup.swift"; sourceTree = "<group>";};
@@ -88,9 +90,9 @@ F8DC1BF23AFE2F12EC3FC14B = {isa = XCConfigurationList; buildConfigurations = (1D
 1BC49F9E61847F08DE049A2C = {isa = PBXNativeTarget; buildConfigurationList = F8DC1BF23AFE2F12EC3FC14B; buildPhases = (B04CA999D127AD074C35A98D,327C476763389327E1BEFA32,8239C46B6B2FAF77E9716677); buildRules = (); dependencies = (); name = Luma; productName = Luma; productReference = 28CC22F19963439662FD3595; productType = "com.apple.product-type.application";};
 044D660F8CA5E7669ED72977 = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MusicPlayerTests.swift"; sourceTree = "<group>";};
 FD92A4FDB61096F654F5AABF = {isa = PBXBuildFile; fileRef = 044D660F8CA5E7669ED72977;};
-F9565A44EF14793D613EC027 = {isa = PBXGroup; children = (A70000000000000000000001,002E70D951929759CE245D8A,BC106087E206B87374D26476,C175FDAD635B48A52AC30C23,0F985D070ED29EA4FE5FFD6B,5AFB72107729EF00D3D324F6,A7718A7069EA1A83263C06B4,044D660F8CA5E7669ED72977); path = LumaTests; sourceTree = "<group>";};
+F9565A44EF14793D613EC027 = {isa = PBXGroup; children = (A72000000000000000000061,A70000000000000000000001,002E70D951929759CE245D8A,BC106087E206B87374D26476,C175FDAD635B48A52AC30C23,0F985D070ED29EA4FE5FFD6B,5AFB72107729EF00D3D324F6,A7718A7069EA1A83263C06B4,044D660F8CA5E7669ED72977); path = LumaTests; sourceTree = "<group>";};
 A04EA6FF5A6E7351CC608332 = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LumaTests.xctest; sourceTree = BUILT_PRODUCTS_DIR;};
-0B90614C597F32FE14E8A511 = {isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (A70000000000000000000002,922CD1575E0ED484CD3C40CB,415633E0B151C0133015929A,FD92A4FDB61096F654F5AABF); runOnlyForDeploymentPostprocessing = 0;};
+0B90614C597F32FE14E8A511 = {isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (A72000000000000000000062,A70000000000000000000002,922CD1575E0ED484CD3C40CB,415633E0B151C0133015929A,FD92A4FDB61096F654F5AABF); runOnlyForDeploymentPostprocessing = 0;};
 C319C4DBA1CCC0AB21D41854 = {isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0;};
 7145D6E7C003A0A632CE0BBD = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (07312A0982A9D21CB3CD241B,685ECD2F4D083B7C3FDFA3C0,496E72F321B0A3E855F9B28D,2D61B0B195BE51DFF4E461D3); runOnlyForDeploymentPostprocessing = 0;};
 16C159834F84AA9C827B2970 = {isa = PBXContainerItemProxy; containerPortal = 98F54143AB4E86B28C3AFEE0; proxyType = 1; remoteGlobalIDString = 1BC49F9E61847F08DE049A2C; remoteInfo = Luma;};

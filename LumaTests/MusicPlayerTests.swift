@@ -336,6 +336,50 @@ struct MusicPlayerTests {
         #expect(fixture.player().tracks.isEmpty)
     }
 
+    @Test func importedTimedFileFollowsRealAudioThroughPauseSeekRateAndTrackChange() async throws {
+        let fixture = Fixture(seed: false); defer { fixture.clean() }
+        let player = fixture.player()
+        await player.importFiles(Track.demos.prefix(2).map(TestAudio.url(for:)))
+        let track = try #require(player.tracks.first)
+        let other = try #require(player.tracks.last)
+        #expect(track.id != other.id)
+        let file = fixture.documents.appendingPathComponent("Signal.lrc")
+        let source = "[00:00]<00:00>Signal <00:02>through<00:05>\n[00:08]Return"
+        try source.write(to: file, atomically: true, encoding: .utf8)
+        let imported = await player.importLyrics(file, for: track)
+        #expect(imported)
+        LibraryRepository(documents: fixture.documents).flush()
+        #expect(fixture.player().lyrics[track.id] == source)
+        let provider = StoredLyricsProvider(texts: player.lyrics)
+        let timeline = try #require(await provider.timeline(for: track.id))
+        #expect(timeline.hasWordTiming)
+        player.select(track)
+        player.pause()
+        for position in [1.0, 8.8, 0.6, 4.0, 8.2, 1.5] {
+            player.seek(to: position)
+            #expect(abs(player.lyricsPlaybackTime - position) < 0.07)
+            #expect(timeline.frame(at: player.lyricsPlaybackTime).activeIDs == [position >= 8 ? 1 : 0])
+        }
+        let held = player.lyricsPlaybackTime
+        try await Task.sleep(for: .milliseconds(120))
+        #expect(abs(player.lyricsPlaybackTime - held) < 0.03)
+        player.playbackRate = 1.5
+        player.play()
+        try await Task.sleep(for: .milliseconds(350))
+        #expect(player.lyricsPlaybackTime > held + 0.1)
+        player.select(other)
+        #expect(player.current.id == other.id)
+        #expect(player.lyricsPlaybackTime < 0.5)
+        #expect(player.lyrics[other.id] == nil)
+        player.pause()
+
+        let malformed = fixture.documents.appendingPathComponent("Bad.ttml")
+        try "<tt><body>".write(to: malformed, atomically: true, encoding: .utf8)
+        let accepted = await player.importLyrics(malformed, for: track)
+        #expect(!accepted)
+        #expect(player.lyrics[track.id] == source)
+    }
+
     @Test func invalidImportDoesNotEnterLibrary() async throws {
         let fixture = Fixture(); defer { fixture.clean() }
         let file = fixture.documents.appendingPathComponent("invalid.mp3")
