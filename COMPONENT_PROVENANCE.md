@@ -26,3 +26,13 @@ La rama M4 deriva de Luma `7006a4b51aa3bc5a1175036ea7ec83034fdccbfe` bajo AGPLv3
 | Archivos de prueba | Audio y letras originales creados en Debug. Los tests usan los importadores del producto y el reloj de AVAudioPlayer. |
 
 [Auditoría y SHA de los componentes](M5_COMPONENT_AUDIT.md) · [Textos de licencia y avisos](ThirdParty/).
+
+## M6
+
+| Función | Origen y versión | Archivos y estado |
+| --- | --- | --- |
+| Catálogo de archivos remotos | Diseño evaluado en BitChord para Apple a `9c20ef321f311a3dd3f051ebd820abbc8f952413` | `Luma/WebDAVLibrary.swift` y `Luma/WebDAVLibraryView.swift` implementan el contrato WebDAV con Foundation y SwiftUI. El producto no incorpora el código Kotlin ni Rust de BitChord. |
+| Prueba de interoperabilidad HTTP | `scripts/webdav-fixture.py` de BitChord en el mismo SHA, GPLv3 | CI ejecuta dinámicamente el archivo original desde el checkout público fijado. `scripts/start-webdav-test-server.sh` lo configura en loopback, consume el cuerpo de PROPFIND y le proporciona audio y letras originales. `scripts/WebDAVTransportCheck.swift` y XCTest ejercitan el cliente de producción. |
+| Reproducción, cola y karaoke | STRSK M5 y sus componentes licenciados | `MusicPlayer.swift` devuelve las pistas importadas o ya existentes por identidad de audio. Después de la descarga, SQLite, AVAudioPlayer, Now Playing y LyricsView siguen una única ruta para archivos locales. |
+
+BitChord for Apple es copyright © 2026 Martin BAGUMA y deriva de BitChord de Kushagra Singh. Los avisos y textos completos de la herramienta de prueba se conservan en el checkout original. La aplicación, su IPA y su código fuente no incluyen ese servidor. [Fuente del servidor](https://github.com/bagumamartin/BitChord/blob/9c20ef321f311a3dd3f051ebd820abbc8f952413/scripts/webdav-fixture.py) · [Avisos](https://github.com/bagumamartin/BitChord/blob/9c20ef321f311a3dd3f051ebd820abbc8f952413/THIRD_PARTY_NOTICES.md).

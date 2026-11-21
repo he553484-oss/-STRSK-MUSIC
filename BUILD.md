@@ -117,3 +117,25 @@ cat "$EVIDENCE_DIR/stages.txt"
 El script construye NativeCoreFFI y BitChordShared, genera el proyecto Xcode y ejecuta Release arm64 y Release para simulador con firma deshabilitada. Conserva los resultados de XCTest si los produce Xcode, el inventario de destinos y la captura si la app original abre en iOS 26. Los tests automatizados de Rust, Kotlin/Native y los verificadores Swift se ejecutan por separado. El proyecto fijado genera una app y un widget sin target XCTest para iOS.
 
 Para instalar una IPA de STRSK MUSIC usa el procedimiento de AltStore Classic de M4 y el artefacto del commit que quieras validar. Una captura del simulador de BitChord y una IPA de STRSK de M5 tienen alcances distintos. En BitChord original, los App Groups, iCloud y el widget requieren comprobar los entitlements resultantes en el perfil del dispositivo. Ninguna comprobación del simulador acredita firma, instalación en un iPhone ni audio con pantalla bloqueada.
+
+### Biblioteca remota de STRSK
+
+Abre **Listen → Remote Library** e introduce la dirección HTTPS de una carpeta WebDAV a la que tengas acceso. La conexión acepta un servidor público o autenticación HTTP Basic sobre TLS. La app recuerda la dirección de la última conexión exitosa en el dispositivo. El usuario y la contraseña se mantienen durante la sesión de catálogo. Si la carpeta usa una jerarquía como `Artista/Álbum/Pista.wav`, las agrupaciones de artistas y álbumes se basan en ella.
+
+Seleccionar una pista descarga el archivo completo a la biblioteca y empieza a reproducirlo con el motor local. Un archivo de letras del mismo nombre base, como `Pista.lrc` o `Pista.ttml`, puede incorporarse al mismo tiempo si la pista aún no tiene letras. El audio queda disponible para cola, playlists y reproducción sin conexión. Las playlists de STRSK se guardan en SQLite. WebDAV es de solo lectura y representa la colección de ese servidor.
+
+Para repetir la prueba de transporte y la prueba de interfaz, inicia la fixture local del commit fijado. El ejecutable de transporte requiere Swift 6. La prueba XCTest requiere el simulador y el servidor activo durante la ejecución.
+
+```bash
+fixture="$(mktemp -d)"
+scripts/start-webdav-test-server.sh ../bit-chord-original "$fixture"
+trap 'kill "$(cat "$fixture/server.pid")"' EXIT
+swiftc -swift-version 6 -o "$fixture/check" Luma/WebDAVLibrary.swift scripts/WebDAVTransportCheck.swift
+"$fixture/check"
+
+# En macOS, con un simulador arrancado.
+xcodebuild -project Luma.xcodeproj -scheme Luma -configuration Debug \
+  -destination "platform=iOS Simulator,id=$STRSK_SIMULATOR_ID" \
+  -only-testing:LumaUITests/LumaUITests/testWebDAVMusicPlaysWithImportedKaraoke \
+  CODE_SIGNING_ALLOWED=NO test
+```
