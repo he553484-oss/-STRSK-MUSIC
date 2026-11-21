@@ -3,6 +3,9 @@ import UniformTypeIdentifiers
 
 struct ContentView: View {
     @Environment(MusicPlayer.self) private var player
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Namespace private var playerTransition
+    private let miniPlayerSource = "now-playing"
     @State private var selectedTab = 0
     @State private var showPlayer = false
     @State private var showImport = false
@@ -26,10 +29,19 @@ struct ContentView: View {
             }
         }
         .tabViewBottomAccessory {
-            if !player.tracks.isEmpty { MiniPlayer(showPlayer: $showPlayer).accessibilityHidden(showPlayer) }
+            if !player.tracks.isEmpty {
+                MiniPlayer(showPlayer: $showPlayer, transition: playerTransition, sourceID: miniPlayerSource)
+                    .accessibilityHidden(showPlayer)
+            }
         }
         .onChange(of: player.tracks.isEmpty) { _, empty in if empty { showPlayer = false } }
-        .fullScreenCover(isPresented: $showPlayer) { NowPlayingView() }
+        .fullScreenCover(isPresented: $showPlayer) {
+            if reduceMotion {
+                NowPlayingView()
+            } else {
+                NowPlayingView().navigationTransition(.zoom(sourceID: miniPlayerSource, in: playerTransition))
+            }
+        }
         .fileImporter(isPresented: $showImport, allowedContentTypes: [.audio], allowsMultipleSelection: true) { result in
             switch result {
             case .success(let urls): Task { await player.importFiles(urls) }
@@ -101,10 +113,10 @@ struct TrackRow: View {
                     TrackArtwork(track: track).frame(width: 52, height: 52).clipShape(.rect(cornerRadius: 9))
                     VStack(alignment: .leading, spacing: 5) {
                         HStack(spacing: 5) {
-                            Text(track.title).font(.system(size: 15, weight: .medium))
+                            Text(track.title).font(.subheadline.weight(.semibold))
                             if player.favorites.contains(track.id) { Image(systemName: "heart.fill").font(.system(size: 9)) }
                         }.foregroundStyle(.white)
-                        Text(track.artist).font(.system(size: 12)).foregroundStyle(Theme.secondary)
+                        Text(track.artist).font(.caption).foregroundStyle(Theme.secondary)
                     }.lineLimit(1)
                     Spacer(minLength: 0)
                     if player.current.id == track.id && player.isPlaying { Equalizer(active: true).foregroundStyle(Theme.accent) }
@@ -125,7 +137,7 @@ struct TrackRow: View {
                     Divider()
                     Button("Remove from library", systemImage: "trash", role: .destructive) { confirmRemoval = true }
                 }
-            } label: { Image(systemName: "ellipsis").foregroundStyle(Theme.secondary).frame(width: 32, height: 44) }
+            } label: { Image(systemName: "ellipsis").foregroundStyle(Theme.secondary).frame(width: 44, height: 44) }
                 .accessibilityLabel("Options for \(track.title)")
         }
         .sheet(isPresented: $showPlaylistPicker) { AddToPlaylistView(tracks: [track]) }
@@ -140,23 +152,30 @@ struct TrackRow: View {
 struct MiniPlayer: View {
     @Environment(MusicPlayer.self) private var player
     @Binding var showPlayer: Bool
+    let transition: Namespace.ID
+    let sourceID: String
+
     var body: some View {
-        HStack(spacing: 12) {
+        HStack(spacing: 6) {
             Button { showPlayer = true } label: {
                 HStack(spacing: 12) {
-                    TrackArtwork(track: player.current).frame(width: 40, height: 40).clipShape(.rect(cornerRadius: 8))
+                    CoverFrame(track: player.current, cornerRadius: 8).frame(width: 40, height: 40)
                     VStack(alignment: .leading, spacing: 3) {
-                        Text(player.current.title).font(.system(size: 13, weight: .semibold)).foregroundStyle(.white)
-                        Text(player.current.artist).font(.system(size: 10)).foregroundStyle(Theme.secondary)
+                        Text(player.current.title).font(.subheadline.weight(.semibold)).foregroundStyle(.white)
+                        Text(player.current.artist).font(.caption2).foregroundStyle(Theme.secondary)
                     }.lineLimit(1)
                     Spacer(minLength: 0)
                 }.contentShape(Rectangle())
             }.buttonStyle(.plain).accessibilityLabel("Open now playing")
-            Button { player.toggle() } label: { Image(systemName: player.isPlaying ? "pause.fill" : "play.fill").font(.system(size: 19)).frame(width: 40, height: 44) }
+            Button { player.toggle() } label: { Image(systemName: player.isPlaying ? "pause.fill" : "play.fill").font(.system(size: 19)).frame(width: 44, height: 44) }
+                .foregroundStyle(Theme.accent)
                 .buttonStyle(.plain).accessibilityLabel(player.isPlaying ? "Pause" : "Play").accessibilityIdentifier("mini.playPause")
-            Button { player.next() } label: { Image(systemName: "forward.end.fill").font(.system(size: 18)).frame(width: 36, height: 44) }
+            Button { player.next() } label: { Image(systemName: "forward.end.fill").font(.system(size: 18)).frame(width: 44, height: 44) }
                 .buttonStyle(.plain).accessibilityLabel("Next track").accessibilityIdentifier("mini.next")
-        }.padding(.horizontal, 14).padding(.vertical, 5)
+        }
+        .padding(.horizontal, 14)
+        .padding(.vertical, 5)
+        .matchedTransitionSource(id: sourceID, in: transition)
     }
 }
 

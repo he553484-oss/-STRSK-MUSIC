@@ -1,5 +1,21 @@
 import SwiftUI
 
+struct CoverFrame: View {
+    let track: Track
+    var cornerRadius: CGFloat = 18
+
+    var body: some View {
+        TrackArtwork(track: track)
+            .aspectRatio(1, contentMode: .fit)
+            .clipShape(.rect(cornerRadius: cornerRadius))
+            .overlay {
+                RoundedRectangle(cornerRadius: cornerRadius)
+                    .strokeBorder(.white.opacity(0.12), lineWidth: 1)
+                    .allowsHitTesting(false)
+            }
+    }
+}
+
 struct TrackArtwork: View {
     @Environment(MusicPlayer.self) private var player
     let track: Track

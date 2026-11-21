@@ -5,6 +5,8 @@ import MediaPlayer
 struct NowPlayingView: View {
     @Environment(MusicPlayer.self) private var player
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.scenePhase) private var scenePhase
     private enum Panel: String, Identifiable {
         case queue, lyrics, settings, playlist, info
         var id: String { rawValue }
@@ -18,15 +20,15 @@ struct NowPlayingView: View {
     var body: some View {
         GeometryReader { geometry in
             ZStack {
-                AppBackground(strength: 0.34)
+                AppBackground(strength: 0.52)
                 ScrollView(showsIndicators: false) {
                     VStack(spacing: 0) {
                         HStack {
                             GlassIcon(symbol: "chevron.down", label: "Close now playing") { dismiss() }
                             Spacer()
                             VStack(spacing: 5) {
-                                Text("NOW PLAYING").font(.system(size: 9, weight: .semibold)).tracking(2.5)
-                                Text(player.contextName).font(.system(size: 11)).foregroundStyle(Theme.secondary).lineLimit(1)
+                                Text("Now playing").font(.caption.weight(.semibold)).accessibilityAddTraits(.isHeader)
+                                Text(player.contextName).font(.caption2).foregroundStyle(Theme.secondary).lineLimit(1)
                             }
                             Spacer()
                             Menu {
@@ -42,7 +44,8 @@ struct NowPlayingView: View {
                         }
                         .padding(.top, 10)
 
-                        let artworkWidth = min(geometry.size.width - 56, max(200, geometry.size.height * (showsVisualizer ? 0.35 : 0.39)))
+                        let artworkWidth = max(1, min(geometry.size.width - 56,
+                                                     geometry.size.height * (showsVisualizer ? 0.37 : 0.44)))
                         PlayerArtworkView()
                             .frame(width: artworkWidth)
                             .padding(.top, geometry.size.height < 750 ? 20 : 28)
@@ -56,11 +59,12 @@ struct NowPlayingView: View {
 
                         HStack(spacing: 16) {
                             VStack(alignment: .leading, spacing: 7) {
-                                Text(player.current.title).font(.system(size: 30, weight: .semibold)).tracking(-1).lineLimit(2)
-                                Text(player.current.artist).font(.system(size: 16)).foregroundStyle(Theme.secondary).lineLimit(1)
+                                Text(player.current.title).font(.largeTitle.weight(.bold)).lineLimit(2)
+                                    .accessibilityAddTraits(.isHeader)
+                                Text(player.current.artist).font(.subheadline.weight(.medium)).foregroundStyle(Theme.secondary).lineLimit(2)
                             }
                             Spacer(minLength: 0)
-                            Button { withAnimation(.easeInOut(duration: 0.25)) { showsVisualizer.toggle() } } label: {
+                            Button { withAnimation(reduceMotion ? nil : .easeInOut(duration: 0.25)) { showsVisualizer.toggle() } } label: {
                                 Image(systemName: "chart.bar.fill")
                                     .font(.system(size: 20))
                                     .foregroundStyle(showsVisualizer ? Theme.accent : .white.opacity(0.45))
@@ -93,12 +97,13 @@ struct NowPlayingView: View {
 
                         VStack(spacing: 0) {
                             // The player publishes elapsed every 0.25s; interpolate between ticks so the bar glides.
-                            TimelineView(.animation(paused: !player.isPlaying || scrubbing)) { context in
-                                let live = player.isPlaying
-                                    ? min(tick.elapsed + min(context.date.timeIntervalSince(tick.at), 0.5), player.duration)
+                            let animating = player.isPlaying && !scrubbing && !reduceMotion && scenePhase == .active && panel == nil
+                            TimelineView(.animation(minimumInterval: 1.0 / 30, paused: !animating)) { context in
+                                let live = animating
+                                    ? min(tick.elapsed + min(max(context.date.timeIntervalSince(tick.at), 0), 0.5) * Double(player.playbackRate), player.duration)
                                     : player.elapsed
                                 ScrubBar(value: Binding(get: { scrubbing ? scrubPosition : live }, set: { scrubPosition = $0 }),
-                                         range: 0...max(player.duration, 1), time: context.date) { editing in
+                                         range: 0...max(player.duration, 1), time: animating ? context.date : .distantPast) { editing in
                                     if editing { scrubPosition = live; scrubbing = true }
                                     else { player.seek(to: scrubPosition); scrubbing = false }
                                 }
@@ -126,12 +131,13 @@ struct NowPlayingView: View {
                             Button { player.toggle() } label: {
                                 Image(systemName: player.isPlaying ? "pause.fill" : "play.fill")
                                     .font(.system(size: 29, weight: .semibold))
+                                    .foregroundStyle(Theme.background)
                                     .offset(x: player.isPlaying ? 0 : 2)
                                     .frame(width: 78, height: 78)
                                     .contentTransition(.symbolEffect(.replace))
                             }
                             .buttonStyle(.plain)
-                            .glassEffect(.regular.tint(Theme.accent.opacity(0.65)).interactive(), in: .circle)
+                            .background(Theme.accent, in: .circle)
                             .accessibilityLabel(player.isPlaying ? "Pause" : "Play")
                             .accessibilityIdentifier("player.playPause")
                             Spacer(minLength: 10)

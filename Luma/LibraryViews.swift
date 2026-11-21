@@ -43,7 +43,12 @@ struct LibraryView: View {
         NavigationStack {
             ScrollView {
                 LazyVStack(alignment: .leading, spacing: 24) {
-                    Picker("Library section", selection: $section) { ForEach(LibrarySection.allCases, id: \.self) { Text($0.rawValue).tag($0) } }.pickerStyle(.segmented).disabled(selecting)
+                    Picker("Library section", selection: $section) {
+                        ForEach(LibrarySection.allCases, id: \.self) { Text($0.rawValue).tag($0) }
+                    }
+                    .pickerStyle(.segmented)
+                    .disabled(selecting)
+                    .accessibilityIdentifier("library.section")
                     if !selecting, !player.tracks.isEmpty {
                         HStack {
                             Menu {
@@ -60,7 +65,11 @@ struct LibraryView: View {
                             } label: { Text(year.isEmpty ? "Year" : year) }.accessibilityIdentifier("library.yearFilter")
                             Spacer()
                             if !genre.isEmpty || !year.isEmpty { Button("Clear filters") { genre = ""; year = "" } }
-                        }.font(.footnote)
+                        }
+                        .font(.footnote.weight(.medium))
+                        .padding(.horizontal, 14)
+                        .padding(.vertical, 11)
+                        .background(Theme.surface.opacity(0.88), in: .rect(cornerRadius: 14))
                     }
                     if selecting {
                         VStack(spacing: 14) {
@@ -129,12 +138,10 @@ struct LibraryView: View {
                                 NavigationLink {
                                     TrackCollectionView(title: album.album, subtitle: album.albumGroupingArtist, source: .album(album.album, album.albumGroupingArtist), showPlayer: $showPlayer)
                                 } label: {
-                                    VStack(alignment: .leading, spacing: 8) {
-                                        TrackArtwork(track: album).aspectRatio(1, contentMode: .fit).clipShape(.rect(cornerRadius: 14))
-                                        Text(album.album).font(.subheadline.weight(.medium)).lineLimit(1)
-                                        Text(album.albumGroupingArtist).font(.caption).foregroundStyle(Theme.secondary).lineLimit(1)
-                                    }
-                                }.buttonStyle(.plain)
+                                    AlbumTile(album: album)
+                                }
+                                .buttonStyle(.plain)
+                                .accessibilityLabel("Open album \(album.album)")
                             }
                         }
                     } else {
@@ -162,7 +169,7 @@ struct LibraryView: View {
                             .buttonStyle(.glass)
                     }
                 }.padding(24).frame(maxWidth: 650).frame(maxWidth: .infinity)
-            }.background { AppBackground() }.navigationTitle("Library").navigationBarTitleDisplayMode(.inline)
+            }.background { AppBackground() }.navigationTitle("Library").navigationBarTitleDisplayMode(.large)
                 .toolbar {
                     ToolbarItem(placement: .topBarTrailing) {
                         if selecting {
@@ -209,25 +216,73 @@ struct LibraryView: View {
     }
 }
 
+private struct AlbumTile: View {
+    let album: Track
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 7) {
+            CoverFrame(track: album, cornerRadius: 13)
+            Text(album.album).font(.subheadline.weight(.semibold)).foregroundStyle(.white)
+            Text(album.albumGroupingArtist).font(.caption).foregroundStyle(Theme.secondary)
+        }
+        .lineLimit(2)
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+}
+
 struct TrackCollectionView: View {
     @Environment(MusicPlayer.self) private var player
+    @State private var coverTint = ArtworkTint.neutral
     let title: String
     let subtitle: String
     let source: CollectionSource
     @Binding var showPlayer: Bool
     private var tracks: [Track] { source.tracks(in: player) }
+
     var body: some View {
+        let tracks = self.tracks
+        let coverSource = tracks.first.flatMap { player.artworkSource(for: $0) }
         ScrollView {
             LazyVStack(alignment: .leading, spacing: 22) {
-                if let track = tracks.first { TrackArtwork(track: track).frame(width: 170, height: 170).clipShape(.rect(cornerRadius: 20)).frame(maxWidth: .infinity).padding(.vertical, 12) }
-                Text(title).font(.system(size: 32, design: .serif))
-                if !subtitle.isEmpty { Text(subtitle).font(.subheadline).foregroundStyle(Theme.secondary) }
-                Text("\(tracks.count) tracks · \(formattedTime(tracks.compactMap(\.length).reduce(0, +)))").font(.caption).foregroundStyle(Theme.secondary)
+                CollectionHeader(title: title, subtitle: subtitle, tracks: tracks)
                 CollectionControls(tracks: tracks, title: title)
                 if tracks.isEmpty { ContentUnavailableView("No songs", systemImage: "music.note", description: Text("No songs in this collection.")) }
                 ForEach(tracks) { track in TrackRow(track: track) { player.select(track, within: tracks, named: title); showPlayer = true } }
             }.padding(24).frame(maxWidth: 600).frame(maxWidth: .infinity)
-        }.background { AppBackground() }.navigationTitle(title).navigationBarTitleDisplayMode(.inline)
+        }
+        .background { AppBackground(strength: 0.45, coverTint: coverTint) }
+        .navigationTitle(title)
+        .navigationBarTitleDisplayMode(.inline)
+        .task(id: coverSource) {
+            guard let coverSource else { coverTint = .neutral; return }
+            let asset = await ArtworkLoader.shared.load(coverSource)
+            guard !Task.isCancelled else { return }
+            coverTint = asset?.tint ?? .neutral
+        }
+    }
+}
+
+private struct CollectionHeader: View {
+    let title: String
+    let subtitle: String
+    let tracks: [Track]
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 7) {
+            if let track = tracks.first {
+                CoverFrame(track: track, cornerRadius: 22)
+                    .frame(maxWidth: 244)
+                    .frame(maxWidth: .infinity)
+                    .shadow(color: .black.opacity(0.4), radius: 18, y: 12)
+                    .padding(.vertical, 12)
+            }
+            Text(title).font(.largeTitle.weight(.bold)).accessibilityAddTraits(.isHeader)
+            if !subtitle.isEmpty { Text(subtitle).font(.headline).foregroundStyle(Theme.accent) }
+            Text("\(tracks.count) tracks · \(formattedTime(tracks.compactMap(\.length).reduce(0, +)))")
+                .font(.footnote.monospacedDigit())
+                .foregroundStyle(Theme.secondary)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
 

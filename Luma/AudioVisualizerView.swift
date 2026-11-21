@@ -5,12 +5,13 @@ struct PlayerArtworkView: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
-        TrackArtwork(track: player.current, showType: true)
-            .aspectRatio(1, contentMode: .fit)
-            .clipShape(.rect(cornerRadius: 18))
-            .shadow(color: .black.opacity(0.35), radius: 30, y: 20)
-            .scaleEffect(player.isPlaying ? 1 : 0.96)
-            .animation(reduceMotion ? nil : .spring(duration: 0.5), value: player.isPlaying)
+        CoverFrame(track: player.current, cornerRadius: 22)
+            .id(player.current.id)
+            .transition(.opacity)
+            .shadow(color: .black.opacity(0.55), radius: 24, y: 14)
+            .scaleEffect(player.isPlaying || reduceMotion ? 1 : 0.96)
+            .animation(reduceMotion ? nil : .easeInOut(duration: 0.25), value: player.current.id)
+            .animation(reduceMotion ? nil : .spring(duration: 0.45), value: player.isPlaying)
     }
 }
 

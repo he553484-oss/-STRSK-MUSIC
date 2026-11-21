@@ -4,7 +4,7 @@ import AVFoundation
 #endif
 
 @main
-struct LumaApp: App {
+struct STRSKMusicApp: App {
     @State private var player = Self.makePlayer()
     @Environment(\.scenePhase) private var scenePhase
 
@@ -159,7 +159,8 @@ private struct FixtureLyricsClient: LyricsSearching {
 #endif
 
 enum Theme {
-    static let background = Color(white: 0.045)
-    static let secondary = Color.white.opacity(0.53)
-    static let accent = Color(white: 0.86)
+    static let background = Color(red: 0.035, green: 0.039, blue: 0.051)
+    static let surface = Color(red: 0.084, green: 0.093, blue: 0.112)
+    static let secondary = Color.white.opacity(0.68)
+    static let accent = Color(red: 0.85, green: 1, blue: 0.38)
 }

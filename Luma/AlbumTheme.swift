@@ -26,14 +26,15 @@ struct AlbumTheme: ViewModifier {
     }
 }
 
-/// Album color belongs to the background; control tint always remains silver.
 struct AppBackground: View {
     @Environment(\.albumTint) private var tint
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     var strength: Double = 0.24
+    var coverTint: ArtworkTint?
 
     var body: some View {
         GeometryReader { geometry in
+            let tint = coverTint ?? self.tint
             // Dark covers still get a visible, low-opacity wash of their own hue.
             let peak = max(tint.red, tint.green, tint.blue)
             let chroma = peak - min(tint.red, tint.green, tint.blue)
@@ -42,11 +43,13 @@ struct AppBackground: View {
             ZStack {
                 Theme.background
                 RadialGradient(colors: [color.opacity(strength), color.opacity(strength * 0.35), .clear],
-                               center: .topLeading, startRadius: 0, endRadius: max(geometry.size.width, geometry.size.height))
+                               center: UnitPoint(x: 0.26, y: 0.13), startRadius: 0, endRadius: geometry.size.height * 0.83)
+                LinearGradient(colors: [.clear, Theme.background.opacity(0.18), Theme.background],
+                               startPoint: .top, endPoint: .bottom)
             }
         }
         .ignoresSafeArea()
-        .animation(reduceMotion ? nil : .easeInOut(duration: 0.6), value: tint)
+        .animation(reduceMotion ? nil : .easeInOut(duration: 0.45), value: coverTint ?? tint)
         .allowsHitTesting(false)
         .accessibilityHidden(true)
     }
