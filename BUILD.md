@@ -136,6 +136,6 @@ swiftc -swift-version 6 -o "$fixture/check" Luma/WebDAVLibrary.swift scripts/Web
 # En macOS, con un simulador arrancado.
 xcodebuild -project Luma.xcodeproj -scheme Luma -configuration Debug \
   -destination "platform=iOS Simulator,id=$STRSK_SIMULATOR_ID" \
-  -only-testing:LumaUITests/LumaUITests/testWebDAVMusicPlaysWithImportedKaraoke \
+  -only-testing:LumaUITests/LumaUITests/testAuthorizedWebDAVMusicPlaysWithImportedKaraoke \
   CODE_SIGNING_ALLOWED=NO test
 ```

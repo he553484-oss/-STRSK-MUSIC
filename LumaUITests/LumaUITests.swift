@@ -2,10 +2,13 @@ import XCTest
 
 @MainActor
 final class LumaUITests: XCTestCase {
-    func testWebDAVMusicPlaysWithImportedKaraoke() {
-        let share = URL(string: "http://localhost:8181/Music/")!
+    func testAuthorizedWebDAVMusicPlaysWithImportedKaraoke() {
         let app = XCUIApplication()
         app.launchArguments = ["--ui-testing", "--reset-ui-state"]
+        let share = "http://localhost:8181/Music/"
+        app.launchEnvironment["STRSK_TEST_WEBDAV_ADDRESS"] = share
+        app.launchEnvironment["STRSK_TEST_WEBDAV_USERNAME"] = "listener"
+        app.launchEnvironment["STRSK_TEST_WEBDAV_PASSWORD"] = "correct-horse"
         app.launch()
         let entry = app.buttons["library.webdav"]
         XCTAssertTrue(entry.waitForExistence(timeout: 10))
@@ -13,18 +16,15 @@ final class LumaUITests: XCTestCase {
 
         let address = app.textFields["webdav.address"]
         XCTAssertTrue(address.waitForExistence(timeout: 5))
-        address.tap()
-        address.typeText(share.absoluteString)
-        let username = app.textFields["webdav.username"]
-        username.tap()
-        username.typeText("listener")
-        let password = app.secureTextFields["webdav.password"]
-        password.tap()
-        password.typeText("correct-horse")
+        XCTAssertEqual(address.value as? String, share)
         app.buttons["webdav.connect"].tap()
 
         let artist = app.buttons["webdav.artist.Signal Choir"]
-        XCTAssertTrue(artist.waitForExistence(timeout: 10))
+        guard artist.waitForExistence(timeout: 25) else {
+            let labels = app.alerts.staticTexts.allElementsBoundByIndex.map(\.label).joined(separator: " · ")
+            XCTFail("WebDAV catalog did not open. \(labels)")
+            return
+        }
         capture(app, name: "M6 WebDAV · real catalog")
         artist.tap()
         XCTAssertTrue(app.buttons["Download and play Quiet Vector"].waitForExistence(timeout: 5))

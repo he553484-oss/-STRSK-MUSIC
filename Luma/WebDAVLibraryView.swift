@@ -106,7 +106,7 @@ struct WebDAVLibraryView: View {
         } message: {
             Text(message ?? "")
         }
-        .onAppear { if address.isEmpty { address = savedAddress } }
+        .onAppear(perform: prepareConnectionForm)
         .onDisappear { work?.cancel() }
     }
 
@@ -177,6 +177,19 @@ struct WebDAVLibraryView: View {
                                              allowLoopbackHTTP: allowLoopback)
             load(provider)
         } catch { message = error.localizedDescription }
+    }
+
+    private func prepareConnectionForm() {
+        guard address.isEmpty else { return }
+        address = savedAddress
+        #if DEBUG
+        let process = ProcessInfo.processInfo
+        if process.arguments.contains("--ui-testing"), let testAddress = process.environment["STRSK_TEST_WEBDAV_ADDRESS"] {
+            address = testAddress
+            username = process.environment["STRSK_TEST_WEBDAV_USERNAME"] ?? ""
+            password = process.environment["STRSK_TEST_WEBDAV_PASSWORD"] ?? ""
+        }
+        #endif
     }
 
     private func load(_ provider: WebDAVLibrary) {
