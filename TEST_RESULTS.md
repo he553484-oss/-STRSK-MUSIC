@@ -1,4 +1,4 @@
-# Resultados · 21 de noviembre de 2026
+# Resultados · 22 de noviembre de 2026
 
 ## M6 · BitChord y biblioteca WebDAV
 
@@ -10,10 +10,13 @@
 | Transporte WebDAV en STRSK | Pasó contra el servidor HTTP de BitChord fijado, con audio y letras originales. Se verificaron HTTP 401, catálogo, agrupación por artista y álbum, búsqueda, exclusión de otro origen y descargas reales WAV y Enhanced LRC. Una segunda prueba en Linux pasó catálogo, búsqueda y descarga con rclone WebDAV v1.60.1-DEV. El cliente rechazó un certificado firmado por una CA local que el sistema no conocía. |
 | Aplicación STRSK M6 | `69fc8ab` pasó Release arm64, compilación para iPhone 15 Pro con iOS 26.5, 54 unitarias y 13 XCTest de interfaz. WebDAV descargó el WAV y el Enhanced LRC y pasó la prueba de reproducción, pausa y seek sincronizado. [CI](https://github.com/he553484-oss/-STRSK-MUSIC/actions/runs/44961549564) · [Capturas y resultados](https://github.com/he553484-oss/-STRSK-MUSIC/actions/runs/44961549564/artifacts/14730596708). |
 | Regresión de teclado en playlist | `d686967` pasó ambos builds, las 54 unitarias y WebDAV. Una prueba de playlists guardó «S» tras intentar escribir «Selected songs» mediante el teclado del simulador. `849a248` comprueba la entrada antes de enviar y completa el sufijo si el teclado pierde pulsaciones. La prueba de playlists pasó al repetirla en la suite. [Fallo original](https://github.com/he553484-oss/-STRSK-MUSIC/actions/runs/44961603101) · [Confirmación de playlists](https://github.com/he553484-oss/-STRSK-MUSIC/actions/runs/44963374231). |
-| Reintento de WebDAV en interfaz | En `849a248` pasó el transporte y falló una conexión iniciada por XCTest. `4daa1e1` precarga los campos con los datos de la fixture solo en Debug. La prueba usa el botón, el servidor HTTP y el reproductor de la aplicación. [Reintento](https://github.com/he553484-oss/-STRSK-MUSIC/actions/runs/44965518918). |
+| Reintento de WebDAV en interfaz | En `849a248` pasó el transporte y falló una conexión iniciada por XCTest. `4daa1e1` precarga los campos con los datos de la fixture solo en Debug. El transporte volvió a pasar, pero el runner dejó de ofrecer el simulador antes de XCTest. [Reintento](https://github.com/he553484-oss/-STRSK-MUSIC/actions/runs/44965518918). |
 | Reconexión WebDAV | El run `44965118599` perdió una conexión al listar una carpeta antes de llegar a XCTest. El cliente repite una sola vez la solicitud de lectura ante este tipo de error. La prueba local pasó con un cierre real del socket durante PROPFIND y verificó el segundo intento en el registro del servidor. [Fallo de transporte](https://github.com/he553484-oss/-STRSK-MUSIC/actions/runs/44965118599). |
+| Versión validada | `73c63ef15b7d8fb59b68ac4261c9a1a5202eec11` pasó Release arm64, build para simulador, transporte con desconexión inducida, **54 unitarias y 13 pruebas de interfaz sin fallos**. El recorrido WebDAV descargó audio y letras de un servidor HTTP real. XCTest exportó capturas del catálogo y del karaoke en pausa tras un seek. [CI](https://github.com/he553484-oss/-STRSK-MUSIC/actions/runs/44965710415) · [Capturas y resultados](https://github.com/he553484-oss/-STRSK-MUSIC/actions/runs/44965710415/artifacts/14731981659) · [IPA arm64 sin firma](https://github.com/he553484-oss/-STRSK-MUSIC/actions/runs/44965710415/artifacts/14731494964) · [Log resumido](evidence/strsk-m6-ci.log). |
 | Reproducción de un proveedor comercial | Pendiente de una integración autorizada de catálogo y reproducción. |
 | Dispositivo, AltStore y segundo plano | Pendientes de prueba física. |
+
+GitHub publicó ambos artefactos de STRSK M6 y el registro de XCTest identifica los PNG exportados. La descarga del ZIP de la IPA desde el entorno de trabajo devolvió HTTP 403.
 
 ## M5 · Karaoke nativo en iOS
 

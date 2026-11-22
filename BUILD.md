@@ -118,6 +118,8 @@ El script construye NativeCoreFFI y BitChordShared, genera el proyecto Xcode y e
 
 Para instalar una IPA de STRSK MUSIC usa el procedimiento de AltStore Classic de M4 y el artefacto del commit que quieras validar. Una captura del simulador de BitChord y una IPA de STRSK de M5 tienen alcances distintos. En BitChord original, los App Groups, iCloud y el widget requieren comprobar los entitlements resultantes en el perfil del dispositivo. Ninguna comprobación del simulador acredita firma, instalación en un iPhone ni audio con pantalla bloqueada.
 
+El artefacto M6 contiene la IPA arm64 sin firma de `73c63ef`, su SHA-256, las licencias y la referencia al código fuente. [IPA M6 para firmar mediante AltStore Classic](https://github.com/he553484-oss/-STRSK-MUSIC/actions/runs/44965710415/artifacts/14731494964).
+
 ### Biblioteca remota de STRSK
 
 Abre **Listen → Remote Library** e introduce la dirección HTTPS de una carpeta WebDAV a la que tengas acceso. La conexión acepta un servidor público o autenticación HTTP Basic sobre TLS. La app recuerda la dirección de la última conexión exitosa en el dispositivo. El usuario y la contraseña se mantienen durante la sesión de catálogo. Si la carpeta usa una jerarquía como `Artista/Álbum/Pista.wav`, las agrupaciones de artistas y álbumes se basan en ella.

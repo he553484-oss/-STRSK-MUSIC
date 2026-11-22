@@ -8,6 +8,8 @@ M1 y M2 completados. Luma es la base elegida, en `7006a4b51aa3bc5a1175036ea7ec83
 
 **M5 validado.** Karaoke nativo con Enhanced LRC, LRC, TTML y YRC/KRC textuales. La prueba de recorrido importa audio y letras reales, comprueba reproducción, pausa y seek, y guarda capturas. [CI de iOS](https://github.com/he553484-oss/-STRSK-MUSIC/actions/runs/44954613736) · [MP4, capturas y resultados](https://github.com/he553484-oss/-STRSK-MUSIC/actions/runs/44954613736/artifacts/14726799609) · [IPA sin firma](https://github.com/he553484-oss/-STRSK-MUSIC/actions/runs/44954613736/artifacts/14726554985).
 
+**M6 WebDAV validado.** Release arm64, 54 unitarias y 13 pruebas de interfaz en iPhone 15 Pro con iOS 26.5. El catálogo corresponde a la carpeta WebDAV que configura el usuario. La reproducción y el karaoke comienzan tras descargar la pista. [CI de iOS](https://github.com/he553484-oss/-STRSK-MUSIC/actions/runs/44965710415) · [Capturas y resultados](https://github.com/he553484-oss/-STRSK-MUSIC/actions/runs/44965710415/artifacts/14731981659) · [IPA sin firma](https://github.com/he553484-oss/-STRSK-MUSIC/actions/runs/44965710415/artifacts/14731494964).
+
 | Documento | Contenido |
 |---|---|
 | [REPOSITORY_AUDIT.md](REPOSITORY_AUDIT.md) | SHA, candidatos, matriz, código y evidencia upstream |

@@ -29,3 +29,24 @@ Run 44961603101
 2026-11-21T23:44:24.0306930Z ** TEST EXECUTE FAILED **
 2026-11-21T23:44:35.9068010Z File: 3CA5B4D7-E3B8-4F2D-8475-8766C9B85C1B.png, suggested name: "M6 WebDAV · karaoke with paused seek_0_707CAB69-A2B0-4B92-996B-F1F357B45678.png"
 2026-11-21T23:44:35.9068960Z File: EB6778D2-3CF3-469B-87AA-F3980F232429.png, suggested name: "M6 WebDAV · real catalog_0_FC143FEC-3CCE-4BC3-809F-6E8EA64EFF84.png"
+
+Run 44965710415 — verified 73c63ef
+2026-11-22T00:15:33.4208290Z Model=iPhone 15 Pro
+2026-11-22T00:15:33.4209120Z Runtime=com.apple.CoreSimulator.SimRuntime.iOS-26-5
+2026-11-22T00:16:28.4439350Z ** BUILD SUCCEEDED **
+2026-11-22T00:17:56.3145590Z ** TEST BUILD SUCCEEDED **
+2026-11-22T00:20:19.8715000Z PASS WebDAV HTTP 401, catalog, artist/album, search, origin isolation, WAV and Enhanced LRC
+2026-11-22T00:21:27.9705200Z ✔ Test run with 54 tests in 5 suites passed after 13.084 seconds.
+2026-11-22T00:22:35.8577030Z Test Case '-[LumaUITests.LumaUITests testAuthorizedWebDAVMusicPlaysWithImportedKaraoke]' passed (58.204 seconds).
+2026-11-22T00:30:04.2228880Z 	 Executed 13 tests, with 0 failures (0 unexpected) in 506.569 (506.584) seconds
+2026-11-22T00:30:04.2230450Z 	 Executed 13 tests, with 0 failures (0 unexpected) in 506.569 (506.587) seconds
+2026-11-22T00:30:04.2231930Z 	 Executed 13 tests, with 0 failures (0 unexpected) in 506.569 (506.590) seconds
+2026-11-22T00:30:06.8310790Z ** TEST EXECUTE SUCCEEDED **
+2026-11-22T00:30:14.0613700Z File: 99E76BCA-99A9-4B8A-884A-089E94BC306C.png, suggested name: "M6 WebDAV · karaoke with paused seek_0_EA26FEC3-7BA3-4305-A397-99F9317C073A.png"
+2026-11-22T00:30:14.0614760Z File: A962B5D2-6F4F-42D9-AC8B-219F2686DBAA.png, suggested name: "M6 WebDAV · real catalog_0_8CE0D1EB-EFBB-41BF-9536-9857BE317976.png"
+2026-11-22T00:30:30.0215030Z Artifact strsk-ios-verification successfully finalized. Artifact ID 14731981659
+2026-11-22T00:30:30.0216390Z Artifact strsk-ios-verification has been successfully uploaded! Final size is 88784228 bytes. Artifact ID is 14731981659
+2026-11-22T00:30:30.0221740Z Artifact download URL: https://github.com/he553484-oss/-STRSK-MUSIC/actions/runs/44965710415/artifacts/14731981659
+2026-11-22T00:30:33.1578370Z Artifact strsk-unsigned-ipa successfully finalized. Artifact ID 14731494964
+2026-11-22T00:30:33.1619610Z Artifact strsk-unsigned-ipa has been successfully uploaded! Final size is 1490365 bytes. Artifact ID is 14731494964
+2026-11-22T00:30:33.1620910Z Artifact download URL: https://github.com/he553484-oss/-STRSK-MUSIC/actions/runs/44965710415/artifacts/14731494964
