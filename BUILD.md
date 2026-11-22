@@ -97,7 +97,7 @@ El workflow ejecuta el esquema original sobre el fork y graba otra ejecución de
 
 ## M6 · Compilar BitChord sin modificaciones
 
-El verificador requiere un Mac Apple Silicon, Xcode 27 y un runtime iOS 26 para iPhone 15 Pro. Xcode 27 compila contra el SDK que declara BitChord; el punto de instalación que comprueba el smoke test es iOS 26. Usa JDK 21, Rust y sus tres targets Apple, CMake, XcodeGen y Python 3. Gradle usa el wrapper que trae el checkout fijado. La prueba del original es independiente de la compilación de STRSK MUSIC. [Workflow del original](.github/workflows/ios-bitchord-baseline.yml) · [Auditoría M6](M6_BITCHORD_AUDIT.md).
+El verificador requiere un Mac Apple Silicon y Xcode 27, que compila contra el SDK declarado por BitChord. La prueba de arranque prefiere un runtime iOS 26 para iPhone 15 Pro y registra la versión que ejecuta. Si iOS 26 no está instalado en CI, el workflow intenta descargar iOS 26.5 y admite un runtime posterior como alternativa. Usa JDK 21, Rust y sus tres targets Apple, CMake, XcodeGen y Python 3. Gradle usa el wrapper que trae el checkout fijado. [Workflow del original](.github/workflows/ios-bitchord-baseline.yml) · [Auditoría M6](M6_BITCHORD_AUDIT.md).
 
 ```bash
 export DEVELOPER_DIR=/Applications/Xcode_27.app/Contents/Developer
@@ -114,7 +114,7 @@ scripts/verify-bitchord-baseline.sh ../bit-chord-original
 cat "$EVIDENCE_DIR/stages.txt"
 ```
 
-El script construye NativeCoreFFI y BitChordShared, genera el proyecto Xcode y ejecuta Release arm64 y Release para simulador con firma deshabilitada. Conserva los resultados de XCTest si los produce Xcode, el inventario de destinos y la captura si la app original abre en iOS 26. Los tests automatizados de Rust, Kotlin/Native y los verificadores Swift se ejecutan por separado. El proyecto fijado genera una app y un widget sin target XCTest para iOS.
+El script construye NativeCoreFFI y BitChordShared, genera el proyecto Xcode y ejecuta Release arm64 y Release para simulador con firma deshabilitada. Conserva los paquetes de resultados que produce Xcode, el inventario de destinos y la captura si la app original abre en el runtime seleccionado. Los tests automatizados de Rust, Kotlin/Native y los verificadores Swift se ejecutan por separado. El proyecto fijado genera una app y un widget sin target XCTest para iOS.
 
 Para instalar una IPA de STRSK MUSIC usa el procedimiento de AltStore Classic de M4 y el artefacto del commit que quieras validar. Una captura del simulador de BitChord y una IPA de STRSK de M5 tienen alcances distintos. En BitChord original, los App Groups, iCloud y el widget requieren comprobar los entitlements resultantes en el perfil del dispositivo. Ninguna comprobación del simulador acredita firma, instalación en un iPhone ni audio con pantalla bloqueada.
 

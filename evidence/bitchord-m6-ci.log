@@ -1,0 +1,25 @@
+BitChord 9c20ef321f311a3dd3f051ebd820abbc8f952413 · GitHub Actions run 44960824322
+2026-11-21T23:15:02.9590920Z Xcode 27.0
+2026-11-21T23:15:16.9505010Z --- rust-framework ---
+2026-11-21T23:30:32.2898000Z OK: AppleApp/Frameworks/NativeCoreFFI.xcframework + AppleApp/Generated/NativeCore.swift
+2026-11-21T23:30:32.4468510Z --- kotlin-framework ---
+2026-11-21T23:50:44.9717710Z BUILD SUCCESSFUL in 20m 11s
+2026-11-21T23:50:47.2569010Z OK: AppleApp/Frameworks/BitChordShared.xcframework (configuration: release)
+2026-11-21T23:50:47.2933280Z --- swift-queue-verifier ---
+2026-11-21T23:50:57.7152690Z PASS 109 queue, recommendation, sequencing, hero and restore checks
+2026-11-21T23:50:57.9997640Z --- swift-local-library-verifier ---
+2026-11-21T23:50:58.0200210Z --- rust-tests ---
+2026-11-21T23:54:25.4210110Z test result: ok. 318 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 108.65s
+2026-11-21T23:54:25.4467920Z --- kotlin-tests ---
+2026-11-21T23:57:08.6709250Z > Task :shared:macosArm64Test
+2026-11-21T23:58:16.7184600Z > Task :innertubex:macosArm64Test
+2026-11-21T23:59:54.1164270Z > Task :quackjs:macosArm64Test SKIPPED
+2026-11-21T23:59:54.3637090Z BUILD SUCCESSFUL in 5m 28s
+2026-11-21T23:59:54.4043990Z --- xcodegen ---
+2026-11-21T23:59:54.6343210Z --- release-arm64 ---
+2026-11-22T00:03:47.3275430Z ** BUILD SUCCEEDED **
+2026-11-22T00:03:47.6728590Z --- simulator-build ---
+2026-11-22T00:06:33.5084400Z ** BUILD SUCCEEDED **
+2026-11-22T00:06:36.0404460Z StopIteration
+2026-11-22T00:06:36.2026400Z ##[error]Process completed with exit code 1.
+2026-11-22T00:06:38.6522170Z Artifact bitchord-original-evidence successfully finalized. Artifact ID 14731082398
