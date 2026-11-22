@@ -115,14 +115,17 @@ jobs:
           results="$RUNNER_TEMP/strsk-ios"
           fixture="$RUNNER_TEMP/strsk-webdav"
           if [[ "$VERIFY_WEBDAV" == true ]]; then
-            scripts/start-webdav-test-server.sh upstream-bitchord "$fixture"
+            STRSK_WEBDAV_DROP_ONCE=1 scripts/start-webdav-test-server.sh upstream-bitchord "$fixture"
             cleanup_webdav() {
               kill "$(cat "$fixture/server.pid")" 2>/dev/null || true
               cp "$fixture/requests.log" "$results/webdav-requests.log"
+              cp "$fixture/server.log" "$results/webdav-server.log"
+              tail -60 "$fixture/requests.log"
             }
             trap cleanup_webdav EXIT
             xcrun swiftc -swift-version 6 -o "$fixture/check" Luma/WebDAVLibrary.swift scripts/WebDAVTransportCheck.swift
             "$fixture/check" | tee "$results/webdav-transport.log"
+            grep -q 'connection-dropped' "$fixture/requests.log"
             : > "$fixture/requests.log"
           fi
           xcodebuild -project Luma.xcodeproj -scheme Luma -configuration Debug \

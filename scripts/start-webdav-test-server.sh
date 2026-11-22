@@ -44,15 +44,28 @@ PY
 # before delegating so it can serve another request on the same connection.
 WEBDAV_REQUEST_LOG="$output/requests.log" python3 - "$fixture" "$port" "$root" > "$output/server.log" 2>&1 <<'PY' &
 import http.server
+import os
 import runpy
 import sys
+import threading
 
 sys.argv.pop(0)
 fixture = runpy.run_path(sys.argv[0])
+drop_lock = threading.Lock()
 
 class Handler(fixture["Handler"]):
+    drop_once = os.environ.get("STRSK_WEBDAV_DROP_ONCE") == "1"
+
     def do_PROPFIND(self):
         self.rfile.read(int(self.headers.get("Content-Length", "0")))
+        with drop_lock:
+            drop = type(self).drop_once and self.path.endswith("/Signal%20Choir/")
+            if drop:
+                type(self).drop_once = False
+        if drop:
+            self.record("connection-dropped")
+            self.close_connection = True
+            return
         super().do_PROPFIND()
 
 http.server.ThreadingHTTPServer(("127.0.0.1", fixture["PORT"]), Handler).serve_forever()

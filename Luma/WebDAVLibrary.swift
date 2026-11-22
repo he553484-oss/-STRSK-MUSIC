@@ -158,7 +158,15 @@ struct WebDAVLibrary: Sendable {
             request.setValue("application/xml; charset=utf-8", forHTTPHeaderField: "Content-Type")
             request.httpBody = Data(#"<propfind xmlns="DAV:"><prop><resourcetype/></prop></propfind>"#.utf8)
         }
-        let (temporary, response) = try await Self.session.download(for: request)
+        let download: (URL, URLResponse)
+        do {
+            download = try await Self.session.download(for: request)
+        } catch let error as URLError where [.networkConnectionLost, .cannotConnectToHost].contains(error.code) {
+            // GET and read-only PROPFIND are safe to repeat once after a dropped connection.
+            try Task.checkCancellation()
+            download = try await Self.session.download(for: request)
+        }
+        let (temporary, response) = download
         do {
             guard let response = response as? HTTPURLResponse else { throw WebDAVError.invalidListing }
             guard response.statusCode == expectedStatus else { throw WebDAVError.refused(response.statusCode) }

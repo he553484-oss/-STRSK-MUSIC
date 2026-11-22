@@ -2,7 +2,16 @@ import Foundation
 
 @main
 struct WebDAVTransportCheck {
-    static func main() async throws {
+    static func main() async {
+        do {
+            try await verify()
+        } catch {
+            print("FAIL WebDAV transport: \(error)")
+            exit(1)
+        }
+    }
+
+    private static func verify() async throws {
         let address = "http://localhost:8181/Music/"
         do {
             _ = try WebDAVLibrary(address: address, username: "", password: "")
