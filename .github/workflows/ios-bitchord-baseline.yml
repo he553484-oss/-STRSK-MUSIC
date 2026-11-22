@@ -73,6 +73,15 @@ jobs:
             xcodegen --version
           } 2>&1 | tee "$EVIDENCE_DIR/dependencies.log"
 
+      - name: Prepare iOS 26 Simulator runtime if available
+        continue-on-error: true
+        timeout-minutes: 8
+        run: |
+          xcrun simctl list runtimes available | tee "$EVIDENCE_DIR/runtimes-before.log"
+          if ! grep -q 'com.apple.CoreSimulator.SimRuntime.iOS-26-' "$EVIDENCE_DIR/runtimes-before.log"; then
+            xcodebuild -downloadPlatform iOS -buildVersion 26.5 2>&1 | tee "$EVIDENCE_DIR/runtime-install.log"
+          fi
+
       - name: Build both frameworks and apps, and run upstream offline tests
         run: scripts/verify-bitchord-baseline.sh upstream-bitchord
 

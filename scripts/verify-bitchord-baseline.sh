@@ -52,7 +52,24 @@ if [[ -d AppleApp/Frameworks/BitChordShared.xcframework && -d AppleApp/Framework
         "${signing[@]}" build; then
         xcrun simctl list devices available -j > "$EVIDENCE_DIR/simulators.json"
         xcrun simctl list runtimes available -j > "$EVIDENCE_DIR/runtimes.json"
-        if runtime="$(python3 -c 'import json, sys; print(next(r["identifier"] for r in json.load(sys.stdin)["runtimes"] if r["isAvailable"] and r["version"].startswith("26.") and ".iOS-" in r["identifier"]))' < "$EVIDENCE_DIR/runtimes.json")"; then
+        runtime="$(python3 - "$EVIDENCE_DIR/runtimes.json" <<'PY'
+import json
+import sys
+
+with open(sys.argv[1]) as source:
+    runs = json.load(source)["runtimes"]
+choices = []
+for runtime in runs:
+    if runtime["isAvailable"] and ".iOS-" in runtime["identifier"]:
+        version = tuple(int(part) for part in runtime["version"].split("."))
+        if version[0] >= 26:
+            choices.append((version[0] == 26, version, runtime["identifier"]))
+if choices:
+    print(max(choices)[-1])
+PY
+        )"
+        if [[ -n "$runtime" ]]; then
+            printf '%s\n' "$runtime" | tee "$EVIDENCE_DIR/simulator-runtime.txt"
             app="$RUNNER_TEMP/bitchord-simulator/Build/Products/Release-iphonesimulator/BitChord.app"
             run_stage simulator-smoke bash -e -c '
                 runtime="$1"
@@ -63,10 +80,10 @@ if [[ -d AppleApp/Frameworks/BitChordShared.xcframework && -d AppleApp/Framework
                 xcrun simctl bootstatus "$device" -b
                 xcrun simctl install "$device" "$app"
                 xcrun simctl launch "$device" app.bitchord.BitChord
-                xcrun simctl io "$device" screenshot "$evidence/BitChord-iOS26.png"
+                xcrun simctl io "$device" screenshot "$evidence/BitChord-Simulator.png"
             ' _ "$runtime" "$app" "$EVIDENCE_DIR" || failed=1
         else
-            printf 'simulator-smoke\tBLOCKED (iOS 26 runtime unavailable)\n' >> "$EVIDENCE_DIR/stages.txt"
+            printf 'simulator-smoke\tBLOCKED (no available iOS Simulator runtime 26 or later)\n' >> "$EVIDENCE_DIR/stages.txt"
             failed=1
         fi
     else
